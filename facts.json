@@ -1,0 +1,32 @@
+[
+  {
+    "id": "co-1day",
+    "text": "Within 24 hours of your last cigarette, the carbon monoxide level in your blood returns to normal.",
+    "source": "CDC"
+  },
+  {
+    "id": "taste-2day",
+    "text": "After just two days, nerve endings begin to regrow and your senses of taste and smell start to sharpen.",
+    "source": "NHS"
+  },
+  {
+    "id": "circulation-2wk",
+    "text": "Two to twelve weeks in, your circulation improves and physical activity becomes noticeably easier.",
+    "source": "NHS"
+  },
+  {
+    "id": "lung-9mo",
+    "text": "By nine months, the cilia in your lungs have largely recovered, cutting coughing and infections.",
+    "source": "American Lung Association"
+  },
+  {
+    "id": "heart-1yr",
+    "text": "After one year smoke-free, your excess risk of coronary heart disease is about half that of a smoker.",
+    "source": "American Heart Association"
+  },
+  {
+    "id": "money-mindset",
+    "text": "Every craving you ride out rewires the habit loop a little more — urges peak and pass in just a few minutes.",
+    "source": "Breathe"
+  }
+]
