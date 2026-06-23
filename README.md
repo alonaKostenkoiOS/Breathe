@@ -75,7 +75,7 @@ flowchart TD
 
 | Decision | Rationale |
 |---|---|
-| **`BreatheCore` imports nothing but `Foundation`** | All business logic (money math, recovery timeline, craving insights) is pure and testable on any platform, with no simulator needed. CI runs it with `swift test` in seconds. |
+| **`BreatheCore` imports nothing but `Foundation`** | All business logic (money math, recovery timeline, craving insights) is pure and testable on any platform, with no simulator needed — it runs in seconds with `swift test`. |
 | **Protocols at the boundaries** (`CravingStoring`, `HealthFactProviding`, `DateProviding`) | The domain depends on abstractions, not on SwiftData or `URLSession`. Tests inject in-memory and stub doubles; production injects the real implementations at `AppEnvironment`. |
 | **Injectable clock** (`DateProviding`) | Time-dependent logic is tested deterministically against fixed instants instead of `Date()`. |
 | **`Decimal` for money** | Currency never touches `Double` — a test pins exact-cent arithmetic that floating point would get wrong. |
@@ -98,8 +98,7 @@ Breathe/
 │   ├── Persistence/             # SwiftData store, PlanStore, shared container
 │   └── Features/                # Dashboard, Milestones, Cravings, Onboarding (MVVM)
 ├── Widget/                      # WidgetKit extension
-├── project.yml                  # XcodeGen project definition
-└── .github/workflows/ci.yml     # Core tests + app build
+└── project.yml                  # XcodeGen project definition
 ```
 
 ## Getting started
