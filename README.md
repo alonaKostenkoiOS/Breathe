@@ -10,6 +10,14 @@ focused demonstration of how I structure a production iOS app.
 > **Status:** MVP. The domain layer is fully unit-tested and the app, widget and
 > App Intent build clean under Swift 6 complete concurrency checking.
 
+## Screenshots
+
+| Today | Recovery | Cravings | Log a craving |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screens/01-dashboard.png" width="200" alt="Dashboard"> | <img src="docs/screens/02-recovery.png" width="200" alt="Recovery timeline"> | <img src="docs/screens/03-cravings.png" width="200" alt="Cravings list and insights"> | <img src="docs/screens/04-log-craving.png" width="200" alt="Log a craving"> |
+
+<sub>Captured automatically from the iOS simulator by a UI test (`UITests/ScreenshotTests.swift`) running against a seeded, in-memory environment.</sub>
+
 ---
 
 ## Highlights
@@ -73,7 +81,7 @@ flowchart TD
 | **`Decimal` for money** | Currency never touches `Double` — a test pins exact-cent arithmetic that floating point would get wrong. |
 | **`@Observable` + `@MainActor` ViewModels** | Modern Observation framework; views stay declarative and hold no logic. |
 | **`actor` / `@ModelActor` persistence** | The SwiftData store is a serialised actor, so reads and writes are concurrency-safe under Swift 6. |
-| **App Group** | The app, widget and App Intent share one source of truth for the quit plan and craving store. |
+| **App Group (opt-in)** | When enabled, the app, widget and App Intent share one source of truth for the quit plan and craving store; the store falls back to a local container when it isn't configured, so the app always runs. |
 
 ## Project layout
 
@@ -106,6 +114,25 @@ xcodegen generate
 # 2. Open and run
 open Breathe.xcodeproj
 ```
+
+In Xcode, select the **Breathe** scheme and an iOS Simulator, then run. The app
+builds and runs with any signing team out of the box — no special capabilities
+required.
+
+### Enabling the Home Screen widget's shared data (optional)
+
+The widget reads the app's data through an **App Group**, which is opt-in
+because every developer account needs its own unique identifier:
+
+1. Pick a unique group id, e.g. `group.<your-bundle-id>`.
+2. Set it in `App/Persistence/PlanStore.swift` (`appGroup`) and in
+   `Widget/BreatheWidget.swift`.
+3. Uncomment the `CODE_SIGN_ENTITLEMENTS` lines in `project.yml`, set that id in
+   both `*.entitlements` files, run `xcodegen generate`, and enable the **App
+   Groups** capability for both targets in Xcode.
+
+Without this step everything still runs — the widget simply shows its empty
+state, and the data layer falls back to a local store.
 
 ### Running the tests
 

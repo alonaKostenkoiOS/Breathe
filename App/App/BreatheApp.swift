@@ -3,7 +3,12 @@ import BreatheCore
 
 @main
 struct BreatheApp: App {
-    @State private var environment = AppEnvironment.live()
+    // A seeded, fully in-memory environment is used when the app is launched
+    // by the screenshot UI test, so captures are deterministic and never
+    // touch real storage.
+    @State private var environment = ProcessInfo.processInfo.arguments.contains("-uiTestSeed")
+        ? AppEnvironment.preview()
+        : AppEnvironment.live()
 
     var body: some Scene {
         WindowGroup {

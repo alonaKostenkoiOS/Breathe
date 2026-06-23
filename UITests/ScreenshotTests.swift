@@ -1,0 +1,43 @@
+import XCTest
+
+/// Captures App Store / README screenshots by driving the app through its
+/// main screens with a seeded, in-memory environment. Screenshots are
+/// attached to the test result and exported with `xcresulttool`.
+final class ScreenshotTests: XCTestCase {
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["-uiTestSeed"]
+        app.launch()
+    }
+
+    func testCaptureScreens() {
+        // Dashboard (the "Today" tab is selected on launch).
+        XCTAssertTrue(app.staticTexts["smoke-free"].waitForExistence(timeout: 10))
+        capture("01-dashboard")
+
+        // Recovery timeline.
+        app.tabBars.buttons["Recovery"].tap()
+        XCTAssertTrue(app.navigationBars["Recovery"].waitForExistence(timeout: 5))
+        capture("02-recovery")
+
+        // Cravings list + insights.
+        app.tabBars.buttons["Cravings"].tap()
+        XCTAssertTrue(app.navigationBars["Cravings"].waitForExistence(timeout: 5))
+        capture("03-cravings")
+
+        // Log-craving sheet.
+        app.navigationBars["Cravings"].buttons["Log a craving"].tap()
+        XCTAssertTrue(app.navigationBars["Log craving"].waitForExistence(timeout: 5))
+        capture("04-log-craving")
+    }
+
+    private func capture(_ name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+}

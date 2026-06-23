@@ -5,17 +5,24 @@ import SwiftData
 /// stored in the shared App Group so every process sees the same data.
 enum SharedContainer {
     static func make(inMemory: Bool = false) -> ModelContainer {
-        let configuration: ModelConfiguration
         if inMemory {
-            configuration = ModelConfiguration(isStoredInMemoryOnly: true)
-        } else {
-            configuration = ModelConfiguration(
-                "Breathe",
-                groupContainer: .identifier(PlanStore.appGroup)
+            return try! ModelContainer(
+                for: CravingEntity.self,
+                configurations: ModelConfiguration(isStoredInMemoryOnly: true)
             )
         }
-        // A persistent store failure is unrecoverable at launch; surfacing it
-        // loudly in development beats silently shipping a broken store.
-        return try! ModelContainer(for: CravingEntity.self, configurations: configuration)
+
+        // Prefer the shared App Group container so the widget reads the same
+        // store as the app. This only succeeds when the App Group capability
+        // is configured for the signing team (see README).
+        let shared = ModelConfiguration("Breathe", groupContainer: .identifier(PlanStore.appGroup))
+        if let container = try? ModelContainer(for: CravingEntity.self, configurations: shared) {
+            return container
+        }
+
+        // Fall back to a local store so the app still runs out of the box,
+        // before any App Group is set up. The widget simply shows its empty
+        // state until sharing is enabled.
+        return try! ModelContainer(for: CravingEntity.self)
     }
 }

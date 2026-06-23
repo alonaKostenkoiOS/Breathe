@@ -35,7 +35,9 @@ targets:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        CODE_SIGN_ENTITLEMENTS: App/Resources/Breathe.entitlements
+        # App Group sharing for the widget is opt-in — see README. To enable,
+        # set this to App/Resources/Breathe.entitlements and use your own group id.
+        # CODE_SIGN_ENTITLEMENTS: App/Resources/Breathe.entitlements
 
   BreatheWidgetExtension:
     type: app-extension
@@ -47,10 +49,31 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.breathe.app.widget
-        CODE_SIGN_ENTITLEMENTS: Widget/BreatheWidget.entitlements
+        # CODE_SIGN_ENTITLEMENTS: Widget/BreatheWidget.entitlements
         INFOPLIST_KEY_CFBundleDisplayName: Breathe
     info:
       path: Widget/Info.plist
       properties:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
+  BreatheUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: Breathe
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.breathe.app.uitests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  Breathe:
+    build:
+      targets:
+        Breathe: all
+    test:
+      targets:
+        - BreatheUITests
