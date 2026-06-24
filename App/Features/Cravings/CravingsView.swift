@@ -43,6 +43,12 @@ struct CravingsView: View {
                 Section {
                     InsightsSummary(insights: model.insights)
                 }
+                Section("Patterns") {
+                    CravingChartsView(
+                        triggerBreakdown: model.triggerBreakdown,
+                        hourly: model.hourly
+                    )
+                }
             }
             Section("History") {
                 if model.cravings.isEmpty {
@@ -95,7 +101,7 @@ private struct CravingRow: View {
             Image(systemName: craving.didResist ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .foregroundStyle(craving.didResist ? .green : .red)
             VStack(alignment: .leading, spacing: 2) {
-                Text(craving.trigger.label)
+                Text(LocalizedStringKey(craving.trigger.label))
                     .font(.body)
                 Text(craving.date, format: .dateTime.weekday().hour().minute())
                     .font(.caption)

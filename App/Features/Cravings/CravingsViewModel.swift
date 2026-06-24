@@ -7,14 +7,16 @@ import BreatheCore
 final class CravingsViewModel {
     private(set) var cravings: [Craving] = []
     private(set) var insights: CravingInsights = .empty
+    private(set) var triggerBreakdown: [TriggerBreakdown] = []
+    private(set) var hourly: [HourlyCravings] = []
 
     private let store: any CravingStoring
     private let analyzer: CravingAnalyzer
     private let dateProvider: any DateProviding
 
-    init(environment: AppEnvironment, analyzer: CravingAnalyzer = .init()) {
+    init(environment: AppEnvironment) {
         self.store = environment.cravingStore
-        self.analyzer = analyzer
+        self.analyzer = environment.analyzer
         self.dateProvider = environment.dateProvider
     }
 
@@ -22,9 +24,13 @@ final class CravingsViewModel {
         do {
             cravings = try await store.all()
             insights = analyzer.insights(from: cravings)
+            triggerBreakdown = analyzer.breakdownByTrigger(cravings)
+            hourly = analyzer.cravingsByHour(cravings)
         } catch {
             cravings = []
             insights = .empty
+            triggerBreakdown = []
+            hourly = []
         }
     }
 

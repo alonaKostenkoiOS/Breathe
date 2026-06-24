@@ -12,23 +12,32 @@ final class AppEnvironment {
     let planStore: PlanStore
     let cravingStore: any CravingStoring
     let factProvider: any HealthFactProviding
+    let notificationService: any NotificationScheduling
     let calculator: ProgressCalculator
     let milestoneEngine: MilestoneEngine
+    let goalCalculator: SavingsGoalCalculator
+    let analyzer: CravingAnalyzer
     let dateProvider: any DateProviding
 
     init(
         planStore: PlanStore,
         cravingStore: any CravingStoring,
         factProvider: any HealthFactProviding,
+        notificationService: any NotificationScheduling = LocalNotificationService(),
         calculator: ProgressCalculator = .init(),
         milestoneEngine: MilestoneEngine = .init(),
+        goalCalculator: SavingsGoalCalculator = .init(),
+        analyzer: CravingAnalyzer = .init(),
         dateProvider: any DateProviding = SystemDateProvider()
     ) {
         self.planStore = planStore
         self.cravingStore = cravingStore
         self.factProvider = factProvider
+        self.notificationService = notificationService
         self.calculator = calculator
         self.milestoneEngine = milestoneEngine
+        self.goalCalculator = goalCalculator
+        self.analyzer = analyzer
         self.dateProvider = dateProvider
     }
 
@@ -53,16 +62,21 @@ final class AppEnvironment {
             pricePerPack: 12,
             currencyCode: "USD"
         ))
+        store.saveGoal(SavingsGoal(name: "Weekend trip", target: 300))
         return AppEnvironment(
             planStore: store,
             cravingStore: InMemoryCravingStore([
                 Craving(date: .now.addingTimeInterval(-3_600), intensity: 4, trigger: .stress, didResist: true),
-                Craving(date: .now.addingTimeInterval(-90_000), intensity: 2, trigger: .coffee, didResist: false)
+                Craving(date: .now.addingTimeInterval(-50_000), intensity: 5, trigger: .stress, didResist: false),
+                Craving(date: .now.addingTimeInterval(-90_000), intensity: 2, trigger: .coffee, didResist: false),
+                Craving(date: .now.addingTimeInterval(-140_000), intensity: 3, trigger: .afterMeal, didResist: true),
+                Craving(date: .now.addingTimeInterval(-200_000), intensity: 2, trigger: .boredom, didResist: true)
             ]),
             factProvider: RemoteHealthFactProvider(
                 endpoint: URL(string: "https://example.com")!,
                 fetcher: FailingFetcher()
-            )
+            ),
+            notificationService: NoopNotificationService()
         )
     }
 }

@@ -33,6 +33,9 @@ struct DashboardView: View {
             VStack(spacing: 20) {
                 timeHeadline(model)
                 statGrid(model)
+                if let goal = model.goal, let progress = model.goalProgress {
+                    goalCard(goal, progress, currency: model.plan?.currencyCode ?? "USD")
+                }
                 if let next = model.nextMilestone {
                     nextMilestoneCard(next)
                 }
@@ -86,6 +89,40 @@ struct DashboardView: View {
                 tint: .blue
             )
         }
+    }
+
+    private func goalCard(_ goal: SavingsGoal, _ progress: GoalProgress, currency: String) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Goal: \(goal.name)", systemImage: "target")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("\(Int(progress.fraction * 100))%")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(progress.isReached ? .green : .secondary)
+            }
+            ProgressView(value: progress.fraction)
+                .tint(progress.isReached ? .green : .accentColor)
+            if progress.isReached {
+                Text("Reached — treat yourself 🎉")
+                    .font(.subheadline)
+                    .foregroundStyle(.green)
+            } else {
+                HStack {
+                    Text("\(formatter.money(progress.remaining, currencyCode: currency)) to go")
+                    if let eta = progress.eta {
+                        Spacer()
+                        Text("by \(eta, format: .dateTime.month().day())")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .font(.subheadline)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private func nextMilestoneCard(_ status: MilestoneStatus) -> some View {

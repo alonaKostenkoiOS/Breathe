@@ -13,6 +13,11 @@ struct SettingsView: View {
     @State private var pricePerPack = 12.0
     @State private var currencyCode = "USD"
 
+    @State private var goalName = ""
+    @State private var goalTarget = 0.0
+
+    @AppStorage("notificationsEnabled") private var notificationsEnabled = false
+
     @State private var didLoad = false
     @State private var showResetConfirmation = false
     @State private var showSavedConfirmation = false
@@ -31,6 +36,9 @@ struct SettingsView: View {
                         .frame(maxWidth: .infinity)
                         .disabled(!hasChanges)
                 }
+
+                goalSection
+                remindersSection
 
                 Section {
                     Button("Start over", role: .destructive) {
@@ -98,6 +106,38 @@ struct SettingsView: View {
         }
     }
 
+    private var goalSection: some View {
+        Section("Savings goal") {
+            TextField("What are you saving for?", text: $goalName)
+            HStack {
+                Text("Target")
+                Spacer()
+                TextField("Amount", value: $goalTarget, format: .number)
+                    .keyboardType(.decimalPad)
+                    .multilineTextAlignment(.trailing)
+                Text(currencyCode).foregroundStyle(.secondary)
+            }
+            Button("Save goal") { saveGoal() }
+                .disabled(goalName.isEmpty || goalTarget <= 0)
+            if environment.planStore.goal != nil {
+                Button("Remove goal", role: .destructive) { removeGoal() }
+            }
+        }
+    }
+
+    private var remindersSection: some View {
+        Section {
+            Toggle("Milestone notifications", isOn: $notificationsEnabled)
+                .onChange(of: notificationsEnabled) { _, isOn in
+                    Task { await updateNotifications(enabled: isOn) }
+                }
+        } header: {
+            Text("Reminders")
+        } footer: {
+            Text("Get notified the moment your body reaches the next recovery milestone.")
+        }
+    }
+
     private var aboutSection: some View {
         Section("About") {
             LabeledContent("Version", value: appVersion)
@@ -132,20 +172,61 @@ struct SettingsView: View {
         cigarettesPerPack = plan.cigarettesPerPack
         pricePerPack = NSDecimalNumber(decimal: plan.pricePerPack).doubleValue
         currencyCode = plan.currencyCode
+        if let goal = environment.planStore.goal {
+            goalName = goal.name
+            goalTarget = NSDecimalNumber(decimal: goal.target).doubleValue
+        }
         didLoad = true
     }
 
     private func save() {
-        environment.planStore.save(
-            QuitPlan(
-                quitDate: quitDate,
-                cigarettesPerDay: cigarettesPerDay,
-                cigarettesPerPack: cigarettesPerPack,
-                pricePerPack: Decimal(pricePerPack),
-                currencyCode: currencyCode
-            )
+        let plan = QuitPlan(
+            quitDate: quitDate,
+            cigarettesPerDay: cigarettesPerDay,
+            cigarettesPerPack: cigarettesPerPack,
+            pricePerPack: Decimal(pricePerPack),
+            currencyCode: currencyCode
         )
+        environment.planStore.save(plan)
         showSavedConfirmation = true
+
+        // Milestone dates shift when the quit date changes, so reschedule.
+        if notificationsEnabled {
+            Task { await scheduleMilestones(for: plan) }
+        }
+    }
+
+    private func saveGoal() {
+        environment.planStore.saveGoal(SavingsGoal(name: goalName, target: Decimal(goalTarget)))
+        showSavedConfirmation = true
+    }
+
+    private func removeGoal() {
+        environment.planStore.saveGoal(nil)
+        goalName = ""
+        goalTarget = 0
+    }
+
+    private func updateNotifications(enabled: Bool) async {
+        guard enabled else {
+            await environment.notificationService.cancelAll()
+            return
+        }
+        let granted = await environment.notificationService.requestAuthorization()
+        guard granted, let plan = environment.planStore.plan else {
+            // Permission denied — reflect the real state back in the toggle.
+            notificationsEnabled = false
+            return
+        }
+        await scheduleMilestones(for: plan)
+    }
+
+    private func scheduleMilestones(for plan: QuitPlan) async {
+        await environment.notificationService.scheduleMilestones(
+            for: plan,
+            using: environment.milestoneEngine,
+            now: environment.dateProvider.now()
+        )
     }
 }
 

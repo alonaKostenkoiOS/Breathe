@@ -12,26 +12,40 @@ final class DashboardViewModel {
     private(set) var nextMilestone: MilestoneStatus?
     private(set) var fact: HealthFact?
     private(set) var plan: QuitPlan?
+    private(set) var goal: SavingsGoal?
+    private(set) var goalProgress: GoalProgress?
 
     private let calculator: ProgressCalculator
     private let milestoneEngine: MilestoneEngine
+    private let goalCalculator: SavingsGoalCalculator
     private let factProvider: any HealthFactProviding
     private let dateProvider: any DateProviding
+    private let planStore: PlanStore
 
     init(environment: AppEnvironment) {
         self.calculator = environment.calculator
         self.milestoneEngine = environment.milestoneEngine
+        self.goalCalculator = environment.goalCalculator
         self.factProvider = environment.factProvider
         self.dateProvider = environment.dateProvider
+        self.planStore = environment.planStore
         self.plan = environment.planStore.plan
     }
 
     /// Recomputes the derived values for the current instant.
     func refresh() {
+        // Re-read the plan and goal so edits in Settings show up live.
+        plan = planStore.plan
+        goal = planStore.goal
         guard let plan else { return }
         let now = dateProvider.now()
         progress = calculator.progress(for: plan, at: now)
         nextMilestone = milestoneEngine.nextMilestone(for: plan, at: now)
+        if let goal {
+            goalProgress = goalCalculator.progress(goal: goal, plan: plan, at: now)
+        } else {
+            goalProgress = nil
+        }
     }
 
     /// Loads the fact of the day once when the view appears.

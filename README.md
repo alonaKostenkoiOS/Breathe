@@ -16,6 +16,10 @@ focused demonstration of how I structure a production iOS app.
 |:---:|:---:|:---:|:---:|:---:|
 | <img src="docs/screens/01-dashboard.png" width="170" alt="Dashboard"> | <img src="docs/screens/02-recovery.png" width="170" alt="Recovery timeline"> | <img src="docs/screens/03-cravings.png" width="170" alt="Cravings list and insights"> | <img src="docs/screens/04-settings.png" width="170" alt="Settings"> | <img src="docs/screens/05-log-craving.png" width="170" alt="Log a craving"> |
 
+The dashboard also localises fully — here it is in Ukrainian:
+
+<img src="docs/screens/06-ukrainian.png" width="170" alt="Dashboard in Ukrainian">
+
 <sub>Captured automatically from the iOS simulator by a UI test (`UITests/ScreenshotTests.swift`) running against a seeded, in-memory environment.</sub>
 
 ---
@@ -28,6 +32,13 @@ focused demonstration of how I structure a production iOS app.
   guidance) rendered as a timeline and a Swift Charts progress ring.
 - **Craving log + insights** — record cravings, their triggers and whether you
   resisted; the app surfaces your resistance rate and biggest trigger.
+- **Craving analytics** — Swift Charts breakdowns of cravings *by trigger*
+  (resisted vs gave in) and *by time of day*.
+- **Savings goal** — set a target ("a trip"); the dashboard shows progress and a
+  projected date you'll reach it, computed from your daily savings rate.
+- **Milestone reminders** — opt-in local notifications fire the moment your body
+  reaches the next recovery milestone.
+- **Localised** — full English and Ukrainian via a String Catalog.
 - **Editable plan** — change your quit date *and time*, daily count, pack size,
   price and currency at any point; every statistic recomputes from it.
 - **Home Screen widget** — a daily health-recovery fact, self-contained so it
@@ -92,13 +103,15 @@ flowchart TD
 Breathe/
 ├── Packages/BreatheCore/        # Pure domain core + its test suite
 │   ├── Sources/BreatheCore/
-│   │   ├── Models/              # QuitPlan, Progress, HealthMilestone, Craving, HealthFact
-│   │   ├── Services/            # ProgressCalculator, MilestoneEngine, CravingAnalyzer, providers
+│   │   ├── Models/              # QuitPlan, Progress, HealthMilestone, Craving, SavingsGoal, …
+│   │   ├── Services/            # ProgressCalculator, MilestoneEngine, CravingAnalyzer, SavingsGoalCalculator, providers
 │   │   └── Support/             # DateProviding, ProgressFormatter
-│   └── Tests/BreatheCoreTests/  # 22 unit tests (Swift Testing)
+│   └── Tests/BreatheCoreTests/  # 29 unit tests (Swift Testing)
 ├── App/
 │   ├── App/                     # Entry point, AppEnvironment (DI), LogCravingIntent
 │   ├── Persistence/             # SwiftData store, PlanStore, shared container
+│   ├── Services/                # NotificationService (UserNotifications)
+│   ├── Resources/               # Assets, Localizable.xcstrings (en + uk)
 │   └── Features/                # Dashboard, Milestones, Cravings, Settings, Onboarding (MVVM)
 ├── Widget/                      # WidgetKit extension
 └── project.yml                  # XcodeGen project definition
@@ -148,7 +161,7 @@ swift test
 ```
 
 ```
-✔ Test run with 22 tests in 6 suites passed.
+✔ Test run with 29 tests in 8 suites passed.
 ```
 
 ## Testing strategy
@@ -160,7 +173,10 @@ worth protecting lives:
   and the before-quit-date edge case.
 - **`MilestoneEngine`** — achievement flips, chronological ordering, partial
   progress, monotonic counts.
-- **`CravingAnalyzer`** — resistance rate, top-trigger tie-breaking, clamping.
+- **`CravingAnalyzer`** — resistance rate, top-trigger tie-breaking, clamping,
+  and the by-trigger / by-hour breakdowns that drive the charts.
+- **`SavingsGoalCalculator`** — progress fraction, remainder, reached-state and
+  the projected ETA from the daily savings rate.
 - **`RemoteHealthFactProvider`** — decoding, network-failure fallback, malformed
   JSON fallback, and deterministic per-day selection — all without a real
   network, via a stubbed `DataFetching`.
@@ -170,9 +186,9 @@ tested core plus SwiftUI previews for every screen.
 
 ## Possible next steps
 
-- Local notifications for upcoming milestones
 - Streak-freeze / relapse handling in the plan model
-- Swift Charts breakdown of cravings by time-of-day and trigger
+- Interactive widget actions (log a craving from the Home Screen)
+- Snapshot tests for the SwiftUI screens
 - iCloud sync via SwiftData's CloudKit integration
 
 ## License

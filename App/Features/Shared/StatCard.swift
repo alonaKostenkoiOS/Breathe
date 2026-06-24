@@ -5,7 +5,9 @@ import SwiftUI
 struct StatCard: View {
     let icon: String
     let value: String
-    let caption: String
+    /// A `LocalizedStringKey` so the caption is localised from the String
+    /// Catalog — a plain `String` here would bypass SwiftUI's localisation.
+    let caption: LocalizedStringKey
     var tint: Color = .accentColor
 
     var body: some View {
@@ -25,7 +27,6 @@ struct StatCard: View {
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(caption): \(value)")
     }
 }
 

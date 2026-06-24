@@ -26,7 +26,7 @@ struct LogCravingView: View {
                 Section("Trigger") {
                     Picker("Trigger", selection: $trigger) {
                         ForEach(Craving.Trigger.allCases, id: \.self) { trigger in
-                            Text(trigger.label).tag(trigger)
+                            Text(LocalizedStringKey(trigger.label)).tag(trigger)
                         }
                     }
                     .pickerStyle(.menu)
