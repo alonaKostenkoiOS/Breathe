@@ -28,10 +28,16 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Cravings"].waitForExistence(timeout: 5))
         capture("03-cravings")
 
+        // Settings (edit the plan, including quit date & time).
+        app.tabBars.buttons["Settings"].tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
+        capture("04-settings")
+
         // Log-craving sheet.
+        app.tabBars.buttons["Cravings"].tap()
         app.navigationBars["Cravings"].buttons["Log a craving"].tap()
         XCTAssertTrue(app.navigationBars["Log craving"].waitForExistence(timeout: 5))
-        capture("04-log-craving")
+        capture("05-log-craving")
     }
 
     private func capture(_ name: String) {

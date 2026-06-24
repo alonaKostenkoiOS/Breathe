@@ -21,7 +21,12 @@ struct OnboardingView: View {
                         .foregroundStyle(.secondary)
                 }
                 Section("When did you quit?") {
-                    DatePicker("Quit date", selection: $quitDate, in: ...Date())
+                    DatePicker(
+                        "Quit date & time",
+                        selection: $quitDate,
+                        in: ...Date(),
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
                 }
                 Section("Your habit") {
                     Stepper("Cigarettes per day: \(cigarettesPerDay)", value: $cigarettesPerDay, in: 1...80)

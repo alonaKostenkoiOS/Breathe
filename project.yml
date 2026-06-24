@@ -35,8 +35,9 @@ targets:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        # App Group sharing for the widget is opt-in — see README. To enable,
-        # set this to App/Resources/Breathe.entitlements and use your own group id.
+        # App Group sharing (for a personalised stats widget) needs a paid
+        # Apple Developer account. Left off so the app builds on a free
+        # account / device. See README to enable it.
         # CODE_SIGN_ENTITLEMENTS: App/Resources/Breathe.entitlements
 
   BreatheWidgetExtension:

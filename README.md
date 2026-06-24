@@ -12,9 +12,9 @@ focused demonstration of how I structure a production iOS app.
 
 ## Screenshots
 
-| Today | Recovery | Cravings | Log a craving |
-|:---:|:---:|:---:|:---:|
-| <img src="docs/screens/01-dashboard.png" width="200" alt="Dashboard"> | <img src="docs/screens/02-recovery.png" width="200" alt="Recovery timeline"> | <img src="docs/screens/03-cravings.png" width="200" alt="Cravings list and insights"> | <img src="docs/screens/04-log-craving.png" width="200" alt="Log a craving"> |
+| Today | Recovery | Cravings | Settings | Log a craving |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="docs/screens/01-dashboard.png" width="170" alt="Dashboard"> | <img src="docs/screens/02-recovery.png" width="170" alt="Recovery timeline"> | <img src="docs/screens/03-cravings.png" width="170" alt="Cravings list and insights"> | <img src="docs/screens/04-settings.png" width="170" alt="Settings"> | <img src="docs/screens/05-log-craving.png" width="170" alt="Log a craving"> |
 
 <sub>Captured automatically from the iOS simulator by a UI test (`UITests/ScreenshotTests.swift`) running against a seeded, in-memory environment.</sub>
 
@@ -28,8 +28,11 @@ focused demonstration of how I structure a production iOS app.
   guidance) rendered as a timeline and a Swift Charts progress ring.
 - **Craving log + insights** — record cravings, their triggers and whether you
   resisted; the app surfaces your resistance rate and biggest trigger.
-- **Home Screen widget** — days, money saved and cigarettes avoided at a glance,
-  sharing data with the app via an App Group.
+- **Editable plan** — change your quit date *and time*, daily count, pack size,
+  price and currency at any point; every statistic recomputes from it.
+- **Home Screen widget** — a daily health-recovery fact, self-contained so it
+  runs on any account (no App Group required). See below for extending it into a
+  personalised stats widget.
 - **Siri / Shortcuts** — "Log a craving in Breathe" via an `AppIntent`, so a
   craving can be logged without opening the app.
 - **Offline-first** — the motivational fact-of-the-day is fetched from a remote
@@ -43,7 +46,7 @@ The codebase is split into a **pure, framework-free domain core** and a thin
 ```mermaid
 flowchart TD
     subgraph App["App target (SwiftUI)"]
-        Views["Views<br/>Dashboard · Milestones · Cravings · Onboarding"]
+        Views["Views<br/>Dashboard · Milestones · Cravings · Settings · Onboarding"]
         VMs["@Observable ViewModels"]
         Env["AppEnvironment<br/>(composition root / DI)"]
         SD["SwiftDataCravingStore<br/>PlanStore"]
@@ -96,7 +99,7 @@ Breathe/
 ├── App/
 │   ├── App/                     # Entry point, AppEnvironment (DI), LogCravingIntent
 │   ├── Persistence/             # SwiftData store, PlanStore, shared container
-│   └── Features/                # Dashboard, Milestones, Cravings, Onboarding (MVVM)
+│   └── Features/                # Dashboard, Milestones, Cravings, Settings, Onboarding (MVVM)
 ├── Widget/                      # WidgetKit extension
 └── project.yml                  # XcodeGen project definition
 ```
@@ -118,20 +121,24 @@ In Xcode, select the **Breathe** scheme and an iOS Simulator, then run. The app
 builds and runs with any signing team out of the box — no special capabilities
 required.
 
-### Enabling the Home Screen widget's shared data (optional)
+### Personalised stats widget (optional — needs a paid account)
 
-The widget reads the app's data through an **App Group**, which is opt-in
-because every developer account needs its own unique identifier:
+The shipped widget is **self-contained** — it shows a daily recovery fact and
+runs on any account, including a free Apple ID on a real device.
+
+To turn it into a personalised widget (days / money saved / cigarettes avoided),
+the widget needs to read the app's data through an **App Group**, which requires
+a paid Apple Developer Program membership — free provisioning does not support
+App Groups on device. The data layer already supports this path:
 
 1. Pick a unique group id, e.g. `group.<your-bundle-id>`.
-2. Set it in `App/Persistence/PlanStore.swift` (`appGroup`) and in
-   `Widget/BreatheWidget.swift`.
+2. Set it in `App/Persistence/PlanStore.swift` (`appGroup`) and the widget.
 3. Uncomment the `CODE_SIGN_ENTITLEMENTS` lines in `project.yml`, set that id in
    both `*.entitlements` files, run `xcodegen generate`, and enable the **App
    Groups** capability for both targets in Xcode.
 
-Without this step everything still runs — the widget simply shows its empty
-state, and the data layer falls back to a local store.
+Without this step everything still runs and the data layer falls back to a local
+store.
 
 ### Running the tests
 

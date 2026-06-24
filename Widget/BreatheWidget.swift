@@ -2,98 +2,86 @@ import WidgetKit
 import SwiftUI
 import BreatheCore
 
-private let appGroup = "group.com.breathe.app"
-private let planKey = "quit_plan"
+// MARK: - Timeline
 
-/// Reads the shared ``QuitPlan`` written by the app.
-private func loadPlan() -> QuitPlan? {
-    guard
-        let defaults = UserDefaults(suiteName: appGroup),
-        let data = defaults.data(forKey: planKey)
-    else { return nil }
-    return try? JSONDecoder().decode(QuitPlan.self, from: data)
-}
-
-struct BreatheEntry: TimelineEntry {
+struct FactEntry: TimelineEntry {
     let date: Date
-    let progress: BreatheCore.Progress
-    let currencyCode: String
-    let hasPlan: Bool
+    let fact: HealthFact
 }
 
-struct BreatheProvider: TimelineProvider {
-    private let calculator = ProgressCalculator()
+/// Self-contained provider: it surfaces a daily recovery fact from the
+/// bundled catalogue, so the widget works on any account without needing an
+/// App Group. (A personalised stats widget that reads the app's data is
+/// possible too, but that requires the App Group capability — see README.)
+struct FactProvider: TimelineProvider {
+    private let facts = HealthFact.fallback
+    private let calendar = Calendar(identifier: .gregorian)
 
-    func placeholder(in context: Context) -> BreatheEntry {
-        BreatheEntry(date: Date(), progress: BreatheCore.Progress.zero, currencyCode: "USD", hasPlan: true)
+    func placeholder(in context: Context) -> FactEntry {
+        FactEntry(date: Date(), fact: facts[0])
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (BreatheEntry) -> Void) {
-        completion(entry(for: Date()))
+    func getSnapshot(in context: Context, completion: @escaping (FactEntry) -> Void) {
+        completion(FactEntry(date: Date(), fact: fact(for: Date())))
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<BreatheEntry>) -> Void) {
-        // Refresh hourly — money and cigarettes change slowly enough that a
-        // tighter cadence would just burn the widget's refresh budget.
-        let now = Date()
-        let entries = (0..<6).map { hour in
-            entry(for: now.addingTimeInterval(Double(hour) * 3_600))
+    func getTimeline(in context: Context, completion: @escaping (Timeline<FactEntry>) -> Void) {
+        // One entry per day for the next week; the fact rotates each day.
+        let startOfToday = calendar.startOfDay(for: Date())
+        let entries = (0..<7).compactMap { offset -> FactEntry? in
+            guard let day = calendar.date(byAdding: .day, value: offset, to: startOfToday) else { return nil }
+            return FactEntry(date: day, fact: fact(for: day))
         }
         completion(Timeline(entries: entries, policy: .atEnd))
     }
 
-    private func entry(for date: Date) -> BreatheEntry {
-        guard let plan = loadPlan() else {
-            return BreatheEntry(date: date, progress: BreatheCore.Progress.zero, currencyCode: "USD", hasPlan: false)
-        }
-        return BreatheEntry(
-            date: date,
-            progress: calculator.progress(for: plan, at: date),
-            currencyCode: plan.currencyCode,
-            hasPlan: true
-        )
+    /// Deterministic per-day selection so the same day always shows the same
+    /// fact and consecutive days rotate through the catalogue.
+    private func fact(for day: Date) -> HealthFact {
+        let dayNumber = calendar.ordinality(of: .day, in: .era, for: day) ?? 0
+        return facts[abs(dayNumber) % facts.count]
     }
 }
 
+// MARK: - View
+
 struct BreatheWidgetView: View {
-    let entry: BreatheEntry
-    private let formatter = ProgressFormatter()
+    let entry: FactEntry
+    @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        if entry.hasPlan {
-            VStack(alignment: .leading, spacing: 6) {
-                Label("Smoke-free", systemImage: "lungs.fill")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Text("\(entry.progress.daysSmokeFree)d")
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
-                Text(formatter.money(entry.progress.moneySaved, currencyCode: entry.currencyCode))
-                    .font(.headline)
-                    .foregroundStyle(.green)
-                Text("\(entry.progress.cigarettesAvoided) not smoked")
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Smoke-free", systemImage: "lungs.fill")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.tint)
+
+            Text(entry.fact.text)
+                .font(family == .systemSmall ? .caption : .callout)
+                .fontWeight(.medium)
+                .minimumScaleFactor(0.8)
+                .lineLimit(family == .systemSmall ? 5 : 4)
+
+            if family != .systemSmall, let source = entry.fact.source {
+                Spacer(minLength: 0)
+                Text("— \(source)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        } else {
-            VStack(spacing: 4) {
-                Image(systemName: "lungs")
-                Text("Open Breathe to start")
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
+// MARK: - Widget
+
 struct BreatheWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "BreatheWidget", provider: BreatheProvider()) { entry in
+        StaticConfiguration(kind: "BreatheWidget", provider: FactProvider()) { entry in
             BreatheWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
-        .configurationDisplayName("Smoke-Free Progress")
-        .description("Your days, money saved and cigarettes avoided at a glance.")
+        .configurationDisplayName("Daily Motivation")
+        .description("A daily reminder of how your body recovers while you stay smoke-free.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

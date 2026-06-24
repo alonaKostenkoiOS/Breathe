@@ -43,6 +43,9 @@ struct MainTabView: View {
 
             CravingsView()
                 .tabItem { Label("Cravings", systemImage: "bolt.heart") }
+
+            SettingsView()
+                .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
     }
 }
