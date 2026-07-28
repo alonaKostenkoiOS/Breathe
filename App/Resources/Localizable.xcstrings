@@ -1,80 +1,976 @@
 {
   "sourceLanguage" : "en",
-  "version" : "1.0",
   "strings" : {
-    "Today" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Сьогодні" } } } },
-    "Recovery" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Відновлення" } } } },
-    "Cravings" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Тяга" } } } },
-    "Settings" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Налаштування" } } } },
-    "Smoke-Free" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Без цигарок" } } } },
-    "smoke-free" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "без цигарок" } } } },
-    "Smoke-free" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Без цигарок" } } } },
-    "Money saved" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Заощаджено" } } } },
-    "Not smoked" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Не викурено" } } } },
-    "Life regained" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Повернуто життя" } } } },
-    "Days" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Днів" } } } },
-    "Next milestone" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Наступний етап" } } } },
-    "Did you know?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "А ви знали?" } } } },
-    "Timeline" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Хронологія" } } } },
-    "Patterns" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Закономірності" } } } },
-    "History" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Історія" } } } },
-    "No cravings logged" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Тяга ще не записана" } } } },
-    "Log a craving when one hits — spotting patterns is half the battle." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Записуйте тягу, щойно вона з’являється — побачити закономірність це половина успіху." } } } },
-    "Log a craving" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Записати тягу" } } } },
-    "Log craving" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Запис тяги" } } } },
-    "Intensity" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Інтенсивність" } } } },
-    "Strength" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Сила" } } } },
-    "Trigger" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Тригер" } } } },
-    "I resisted it 💪" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Я втрималася 💪" } } } },
-    "Note (optional)" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Нотатка (необов’язково)" } } } },
-    "Cancel" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Скасувати" } } } },
-    "Save" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Зберегти" } } } },
-    "OK" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Гаразд" } } } },
-    "Stress" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Стрес" } } } },
-    "Coffee" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Кава" } } } },
-    "Alcohol" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Алкоголь" } } } },
-    "After a meal" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Після їжі" } } } },
-    "Boredom" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Нудьга" } } } },
-    "Social" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Компанія" } } } },
-    "Other" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Інше" } } } },
-    "Welcome to Breathe" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ласкаво просимо до Breathe" } } } },
-    "A few details and Breathe will track every hour, cigarette and dollar you reclaim." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Кілька деталей — і Breathe рахуватиме кожну годину, цигарку й гривню, які ви повертаєте собі." } } } },
-    "When did you quit?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Коли ви кинули?" } } } },
-    "Quit date & time" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Дата й час відмови" } } } },
-    "Start tracking" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Почати відстеження" } } } },
-    "Your habit" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваша звичка" } } } },
-    "Cost" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Вартість" } } } },
-    "Price per pack" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ціна за пачку" } } } },
-    "Currency" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Валюта" } } } },
-    "I quit on" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Я кинула" } } } },
-    "Save changes" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Зберегти зміни" } } } },
-    "Start over" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Почати заново" } } } },
-    "Start over?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Почати заново?" } } } },
-    "This resets your quit plan. You'll set it up again from scratch." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Це скине ваш план. Доведеться налаштувати його заново." } } } },
-    "Clears your plan and returns to the welcome screen. Your logged cravings are kept." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Очищає план і повертає на привітальний екран. Записи тяги збережуться." } } } },
-    "Saved" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Збережено" } } } },
-    "Your plan has been updated." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваш план оновлено." } } } },
-    "Savings goal" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ціль заощаджень" } } } },
-    "What are you saving for?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "На що збираєте?" } } } },
-    "Target" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ціль" } } } },
-    "Save goal" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Зберегти ціль" } } } },
-    "Remove goal" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Видалити ціль" } } } },
-    "Reminders" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Нагадування" } } } },
-    "Milestone notifications" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Сповіщення про етапи" } } } },
-    "Get notified the moment your body reaches the next recovery milestone." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Отримуйте сповіщення, щойно тіло досягає наступного етапу відновлення." } } } },
-    "Milestone reached 🫁" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Досягнуто новий етап 🫁" } } } },
-    "About" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Про застосунок" } } } },
-    "Version" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Версія" } } } },
-    "Source code" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Вихідний код" } } } },
-    "By trigger" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "За тригером" } } } },
-    "By time of day" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "За часом доби" } } } },
-    "Resisted" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Втрималася" } } } },
-    "Gave in" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Піддалася" } } } },
-    "Reached — treat yourself 🎉" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Досягнуто — побалуйте себе 🎉" } } } },
-    "Goal: %@" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ціль: %@" } } } },
-    "%@ to go" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "залишилось %@" } } } },
-    "by %@" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "до %@" } } } },
-    "Daily Motivation" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Щоденна мотивація" } } } },
-    "A daily reminder of how your body recovers while you stay smoke-free." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Щоденне нагадування, як відновлюється тіло, поки ви без цигарок." } } } }
-  }
+    "We couldn’t load your history" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Не вдалося завантажити історію" } } } },
+    "Your data is still on this device. Try loading it again." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваші дані залишаються на пристрої. Спробуйте завантажити їх ще раз." } } } },
+    "Try Again" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Спробувати ще раз" } } } },
+    "Home" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Головна" } } } },
+    "Progress" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Прогрес" } } } },
+    "Preparing your progress…" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Готуємо ваш прогрес…" } } } },
+    "Your smoke-free journey" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваш шлях без куріння" } } } },
+    "Day %@" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "День %@" } } } },
+    "Every smoke-free moment is meaningful." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Кожна мить без куріння має значення." } } } },
+    "Moving toward %@" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Наступна ціль — %@" } } } },
+    "I’m having a craving" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Мене тягне закурити" } } } },
+    "Take a quiet minute with Breathe" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Зробіть спокійну паузу разом із Breathe" } } } },
+    "Opens a guided breathing exercise" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Відкриває дихальну вправу" } } } },
+    "What you’ve gained" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Що ви вже здобули" } } } },
+    "Cigarettes avoided" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Невикурені цигарки" } } } },
+    "A gentle reminder" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Дбайливе нагадування" } } } },
+    "Goal reached — enjoy this moment." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Цілі досягнуто — порадійте цій миті." } } } },
+    "Craving Rescue" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Допомога під час тяги" } } } },
+    "Close rescue" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Закрити вправу" } } } },
+    "Breathe in" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Вдихайте" } } } },
+    "Breathe out" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Видихайте" } } } },
+    "This moment will pass. Stay with your breath." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ця мить мине. Зосередьтеся на диханні." } } } },
+    "Remember why you started" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Згадайте, чому ви почали" } } } },
+    "Try this now" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Спробуйте зараз" } } } },
+    "Stand up, change rooms, and take a sip of water." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Встаньте, перейдіть до іншої кімнати й зробіть ковток води." } } } },
+    "How are you feeling now?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Як ви почуваєтеся зараз?" } } } },
+    "Whatever the answer, taking this pause mattered." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Хай якою буде відповідь, ця пауза була важливою." } } } },
+    "The craving passed" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Тяга минула" } } } },
+    "I need another minute" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Мені потрібна ще хвилина" } } } },
+    "Close for now" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Закрити" } } } },
+    "How strong is it?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Наскільки сильна тяга?" } } } },
+    "Choose the closest match." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Оберіть найближчий варіант." } } } },
+    "Mild" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Легка" } } } },
+    "Noticeable" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Відчутна" } } } },
+    "Strong" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Сильна" } } } },
+    "Very strong" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Дуже сильна" } } } },
+    "Overwhelming" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Надзвичайна" } } } },
+    "What brought it on?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Що викликало тягу?" } } } },
+    "What happened?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Що сталося?" } } } },
+    "I resisted" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Я втрималася" } } } },
+    "I smoked" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Я закурила" } } } },
+    "Still dealing with it" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Тяга ще не минула" } } } },
+    "Anything you want to remember?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Що варто запам’ятати?" } } } },
+    "Open Craving Rescue" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Відкрити допомогу" } } } },
+    "Save craving" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Зберегти запис" } } } },
+    "You made it through." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ви впоралися." } } } },
+    "Your progress still matters." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваш прогрес і далі важливий." } } } },
+    "Logging this moment helps Breathe understand what support works for you." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Цей запис допоможе Breathe краще зрозуміти, яка підтримка вам підходить." } } } },
+    "Done" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Готово" } } } },
+    "Try Craving Rescue" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Спробувати вправу" } } } },
+    "Close" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Закрити" } } } },
+    "Intensity %@" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Інтенсивність %@" } } } },
+    "Notice without judgment" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Спостерігайте без осуду" } } } },
+    "Each entry helps reveal when a little extra support could help." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Кожен запис показує, коли вам може знадобитися трохи більше підтримки." } } } },
+    "No cravings logged yet" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Записів про тягу ще немає" } } } },
+    "When you record difficult moments, Breathe can start finding your personal patterns." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Записуйте складні моменти, щоб Breathe міг помічати ваші особисті закономірності." } } } },
+    "Your recent pattern" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваші останні закономірності" } } } },
+    "of cravings passed without smoking" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "випадків тяги минули без куріння" } } } },
+    "Your most common recent trigger was %@." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Найчастішим останнім тригером було: %@." } } } },
+    "This week" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Цього тижня" } } } },
+    "A simple view of your difficult moments." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Простий огляд складних моментів." } } } },
+    "No cravings recorded in the last seven days." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "За останні сім днів тягу не записували." } } } },
+    "You logged %@ difficult moments in the last seven days." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "За останні сім днів ви записали складних моментів: %@." } } } },
+    "Delete" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Видалити" } } } },
+    "Your body is recovering" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваше тіло відновлюється" } } } },
+    "Every day without smoking gives your body more room to heal." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Кожен день без куріння допомагає тілу відновлюватися." } } } },
+    "Last four weeks" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Останні чотири тижні" } } } },
+    "Your smoke-free days at a glance." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваші дні без куріння одним поглядом." } } } },
+    "Before quit date" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "До дати відмови" } } } },
+    "Health recovery" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Відновлення здоров’я" } } } },
+    "A gentle timeline of estimated changes." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Орієнтовна хронологія позитивних змін." } } } },
+    "Recovery is personal" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Відновлення в кожного своє" } } } },
+    "Health recovery times are estimates and can vary from person to person." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Терміни відновлення є орієнтовними й можуть відрізнятися для кожної людини." } } } },
+    "Completed" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Завершено" } } } },
+    "In progress" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Триває" } } } },
+    "Quit profile" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Профіль відмови" } } } },
+    "Currency and calculations" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Валюта й розрахунки" } } } },
+    "These values only affect your progress estimates." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ці значення впливають лише на орієнтовні розрахунки прогресу." } } } },
+    "Notifications" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Сповіщення" } } } },
+    "Celebrate important recovery moments. You can change this anytime." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Відзначайте важливі моменти відновлення. Це можна змінити будь-коли." } } } },
+    "App appearance" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Вигляд застосунку" } } } },
+    "Theme" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Тема" } } } },
+    "Follow System" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Як у системі" } } } },
+    "Breathe automatically supports Light and Dark Mode." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Breathe автоматично підтримує світлу й темну теми." } } } },
+    "Data and privacy" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Дані та приватність" } } } },
+    "Your profile and craving history stay on this device." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваш профіль та історія тяги залишаються на цьому пристрої." } } } },
+    "This resets your quit plan. Your logged cravings are kept." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваш план буде скинуто, але записи про тягу збережуться." } } } },
+    "A moment for you" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Мить для вас" } } } },
+    "A peaceful path through green hills toward sunrise" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Спокійна стежка поміж зелених пагорбів до сходу сонця" } } } },
+    "percent" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "відсотків" } } } },
+    "Quit smoking with a plan that adapts to you" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Киньте курити з планом, який підлаштовується під вас" } } } },
+    "Breathe tracks your progress, learns your difficult moments, and helps you get through cravings before they turn into slips." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Breathe відстежує ваш прогрес, вивчає складні моменти й допомагає впоратися з тягою, перш ніж вона призведе до зриву." } } } },
+    "Get Started" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Почати" } } } },
+    "Your data stays on your device." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваші дані залишаються на пристрої." } } } },
+    "Back" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Назад" } } } },
+    "Continue" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Продовжити" } } } },
+    "Skip for now" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Поки пропустити" } } } },
+    "Where are you in your journey?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "На якому ви зараз етапі?" } } } },
+    "I already quit" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Я вже не курю" } } } },
+    "I’m quitting today" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Я кидаю сьогодні" } } } },
+    "We’ll use this date to calculate your smoke-free progress." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "За цією датою ми розрахуємо ваш прогрес без куріння." } } } },
+    "Tell us about your previous routine" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Розкажіть про свій попередній режим" } } } },
+    "This helps calculate cigarettes avoided and money saved." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Це допоможе підрахувати невикурені цигарки та заощаджені гроші." } } } },
+    "When did you usually smoke your first cigarette?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Коли ви зазвичай викурювали першу цигарку?" } } } },
+    "Within 5 minutes after waking" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Упродовж 5 хвилин після пробудження" } } } },
+    "Within 30 minutes" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Упродовж 30 хвилин" } } } },
+    "Within 60 minutes" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Упродовж 60 хвилин" } } } },
+    "More than 60 minutes later" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Пізніше ніж через 60 хвилин" } } } },
+    "When were you most likely to smoke?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Коли вам найчастіше хотілося курити?" } } } },
+    "Choose all situations that were part of your routine." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Оберіть усі ситуації, які були частиною вашого звичного дня." } } } },
+    "Morning coffee" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ранкова кава" } } } },
+    "After meals" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Після їжі" } } } },
+    "Work breaks" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Перерви на роботі" } } } },
+    "Driving" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "За кермом" } } } },
+    "Social situations" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "У компанії" } } } },
+    "Seeing others smoke" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Коли інші курять" } } } },
+    "Before bed" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Перед сном" } } } },
+    "When do these moments usually happen?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Коли зазвичай настають ці моменти?" } } } },
+    "What are you quitting for?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Заради чого ви кидаєте?" } } } },
+    "Better health" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Краще здоров’я" } } } },
+    "Save money" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Заощадження" } } } },
+    "Family and relationships" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Родина та стосунки" } } } },
+    "More energy" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Більше енергії" } } } },
+    "Appearance" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Зовнішність" } } } },
+    "Freedom from addiction" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Свобода від залежності" } } } },
+    "Future family" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Майбутня родина" } } } },
+    "Something personal" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Особиста причина" } } } },
+    "What would you love to save for?" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "На що ви мрієте назбирати?" } } } },
+    "Breathe will learn your difficult moments" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Breathe вивчатиме ваші складні моменти" } } } },
+    "Get support at the right moment" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Отримуйте підтримку вчасно" } } } },
+    "Enable Smart Reminders" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Увімкнути розумні нагадування" } } } },
+    "Not Now" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Не зараз" } } } },
+    "Your smoke-free plan is ready" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Ваш план життя без куріння готовий" } } } },
+    "Your first three days may feel more challenging. We’ll support you around the moments you selected." : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Перші три дні можуть бути складнішими. Ми підтримаємо вас у моменти, які ви обрали." } } } },
+    "Start My Journey" : { "localizations" : { "uk" : { "stringUnit" : { "state" : "translated", "value" : "Почати мій шлях" } } } },
+    "— %@" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ to go" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "залишилось %@"
+          }
+        }
+      }
+    },
+    "%@/%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@/%2$@"
+          }
+        }
+      }
+    },
+    "%@/150" : {
+
+    },
+    "%@%%" : {
+
+    },
+    "%@h" : {
+
+    },
+    "A daily reminder of how your body recovers while you stay smoke-free." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щоденне нагадування, як відновлюється тіло, поки ви без цигарок."
+          }
+        }
+      }
+    },
+    "A few details and Breathe will track every hour, cigarette and dollar you reclaim." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кілька деталей — і Breathe рахуватиме кожну годину, цигарку й гривню, які ви повертаєте собі."
+          }
+        }
+      }
+    },
+    "About" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Про застосунок"
+          }
+        }
+      }
+    },
+    "After a meal" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Після їжі"
+          }
+        }
+      }
+    },
+    "Alcohol" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Алкоголь"
+          }
+        }
+      }
+    },
+    "Boredom" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нудьга"
+          }
+        }
+      }
+    },
+    "by %@" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "до %@"
+          }
+        }
+      }
+    },
+    "By time of day" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За часом доби"
+          }
+        }
+      }
+    },
+    "By trigger" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За тригером"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасувати"
+          }
+        }
+      }
+    },
+    "Clears your plan and returns to the welcome screen. Your logged cravings are kept." : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очищає план і повертає на привітальний екран. Записи тяги збережуться."
+          }
+        }
+      }
+    },
+    "Coffee" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кава"
+          }
+        }
+      }
+    },
+    "Cost" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вартість"
+          }
+        }
+      }
+    },
+    "Cravings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тяга"
+          }
+        }
+      }
+    },
+    "Currency" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Валюта"
+          }
+        }
+      }
+    },
+    "Daily Motivation" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щоденна мотивація"
+          }
+        }
+      }
+    },
+    "Days" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Днів"
+          }
+        }
+      }
+    },
+    "Did you know?" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "А ви знали?"
+          }
+        }
+      }
+    },
+    "Gave in" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Піддалася"
+          }
+        }
+      }
+    },
+    "Get notified the moment your body reaches the next recovery milestone." : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отримуйте сповіщення, щойно тіло досягає наступного етапу відновлення."
+          }
+        }
+      }
+    },
+    "Goal: %@" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ціль: %@"
+          }
+        }
+      }
+    },
+    "History" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Історія"
+          }
+        }
+      }
+    },
+    "I quit on" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Я кинула"
+          }
+        }
+      }
+    },
+    "I resisted it 💪" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Я втрималася 💪"
+          }
+        }
+      }
+    },
+    "Intensity" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інтенсивність"
+          }
+        }
+      }
+    },
+    "Life regained" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повернуто життя"
+          }
+        }
+      }
+    },
+    "Log a craving" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записати тягу"
+          }
+        }
+      }
+    },
+    "Log a craving when one hits — spotting patterns is half the battle." : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записуйте тягу, щойно вона з’являється — побачити закономірність це половина успіху."
+          }
+        }
+      }
+    },
+    "Log craving" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запис тяги"
+          }
+        }
+      }
+    },
+    "Milestone notifications" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сповіщення про етапи"
+          }
+        }
+      }
+    },
+    "Milestone reached 🫁" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Досягнуто новий етап 🫁"
+          }
+        }
+      }
+    },
+    "milestones" : {
+
+    },
+    "Money saved" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заощаджено"
+          }
+        }
+      }
+    },
+    "Next milestone" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наступний етап"
+          }
+        }
+      }
+    },
+    "No cravings logged" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тяга ще не записана"
+          }
+        }
+      }
+    },
+    "Not smoked" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не викурено"
+          }
+        }
+      }
+    },
+    "Note (optional)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нотатка (необов’язково)"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Гаразд"
+          }
+        }
+      }
+    },
+    "Other" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інше"
+          }
+        }
+      }
+    },
+    "Patterns" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закономірності"
+          }
+        }
+      }
+    },
+    "Price per pack" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ціна за пачку"
+          }
+        }
+      }
+    },
+    "Quit date & time" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата й час відмови"
+          }
+        }
+      }
+    },
+    "Reached — treat yourself 🎉" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Досягнуто — побалуйте себе 🎉"
+          }
+        }
+      }
+    },
+    "Recovery" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Відновлення"
+          }
+        }
+      }
+    },
+    "Reminders" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нагадування"
+          }
+        }
+      }
+    },
+    "Remove goal" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити ціль"
+          }
+        }
+      }
+    },
+    "Resisted" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Втрималася"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зберегти"
+          }
+        }
+      }
+    },
+    "Save changes" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зберегти зміни"
+          }
+        }
+      }
+    },
+    "Save goal" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зберегти ціль"
+          }
+        }
+      }
+    },
+    "Saved" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Збережено"
+          }
+        }
+      }
+    },
+    "Savings goal" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ціль заощаджень"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Налаштування"
+          }
+        }
+      }
+    },
+    "smoke-free" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "без цигарок"
+          }
+        }
+      }
+    },
+    "Smoke-free" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без цигарок"
+          }
+        }
+      }
+    },
+    "Smoke-Free" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без цигарок"
+          }
+        }
+      }
+    },
+    "Social" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Компанія"
+          }
+        }
+      }
+    },
+    "Source code" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вихідний код"
+          }
+        }
+      }
+    },
+    "Start over" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Почати заново"
+          }
+        }
+      }
+    },
+    "Start over?" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Почати заново?"
+          }
+        }
+      }
+    },
+    "Start tracking" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Почати відстеження"
+          }
+        }
+      }
+    },
+    "Strength" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сила"
+          }
+        }
+      }
+    },
+    "Stress" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стрес"
+          }
+        }
+      }
+    },
+    "Target" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ціль"
+          }
+        }
+      }
+    },
+    "This resets your quit plan. You'll set it up again from scratch." : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Це скине ваш план. Доведеться налаштувати його заново."
+          }
+        }
+      }
+    },
+    "Timeline" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хронологія"
+          }
+        }
+      }
+    },
+    "Today" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сьогодні"
+          }
+        }
+      }
+    },
+    "Trigger" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тригер"
+          }
+        }
+      }
+    },
+    "Version" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версія"
+          }
+        }
+      }
+    },
+    "Welcome to Breathe" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ласкаво просимо до Breathe"
+          }
+        }
+      }
+    },
+    "What are you saving for?" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На що збираєте?"
+          }
+        }
+      }
+    },
+    "When did you quit?" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Коли ви кинули?"
+          }
+        }
+      }
+    },
+    "You can add routine times later." : {
+
+    },
+    "Your biggest trigger is **%@**." : {
+
+    },
+    "Your first three days may feel more challenging. We’ll support you around the moments you selected." : {
+
+    },
+    "Your habit" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша звичка"
+          }
+        }
+      }
+    },
+    "Your plan has been updated." : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваш план оновлено."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
 }

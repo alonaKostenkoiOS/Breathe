@@ -72,6 +72,19 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.breathe.app.uitests
         GENERATE_INFOPLIST_FILE: YES
 
+  BreatheTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: AppTests
+    dependencies:
+      - target: Breathe
+      - package: BreatheCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.breathe.app.tests
+        GENERATE_INFOPLIST_FILE: YES
+
 schemes:
   Breathe:
     build:
@@ -79,4 +92,5 @@ schemes:
         Breathe: all
     test:
       targets:
+        - BreatheTests
         - BreatheUITests

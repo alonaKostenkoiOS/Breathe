@@ -51,9 +51,9 @@ struct BreatheWidgetView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Smoke-free", systemImage: "lungs.fill")
+            Label("A moment for you", systemImage: "leaf.fill")
                 .font(.caption2.weight(.semibold))
-                .foregroundStyle(.tint)
+                .foregroundStyle(Color(red: 0.05, green: 0.35, blue: 0.26))
 
             Text(entry.fact.text)
                 .font(family == .systemSmall ? .caption : .callout)
@@ -78,7 +78,7 @@ struct BreatheWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "BreatheWidget", provider: FactProvider()) { entry in
             BreatheWidgetView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(Color(red: 0.96, green: 0.97, blue: 0.95), for: .widget)
         }
         .configurationDisplayName("Daily Motivation")
         .description("A daily reminder of how your body recovers while you stay smoke-free.")

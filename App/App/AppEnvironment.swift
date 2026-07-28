@@ -18,6 +18,7 @@ final class AppEnvironment {
     let goalCalculator: SavingsGoalCalculator
     let analyzer: CravingAnalyzer
     let dateProvider: any DateProviding
+    let onboardingAnalytics: any OnboardingAnalyticsTracking
 
     init(
         planStore: PlanStore,
@@ -28,7 +29,8 @@ final class AppEnvironment {
         milestoneEngine: MilestoneEngine = .init(),
         goalCalculator: SavingsGoalCalculator = .init(),
         analyzer: CravingAnalyzer = .init(),
-        dateProvider: any DateProviding = SystemDateProvider()
+        dateProvider: any DateProviding = SystemDateProvider(),
+        onboardingAnalytics: any OnboardingAnalyticsTracking = NoopOnboardingAnalytics()
     ) {
         self.planStore = planStore
         self.cravingStore = cravingStore
@@ -39,6 +41,7 @@ final class AppEnvironment {
         self.goalCalculator = goalCalculator
         self.analyzer = analyzer
         self.dateProvider = dateProvider
+        self.onboardingAnalytics = onboardingAnalytics
     }
 
     /// The live environment used by the running app.

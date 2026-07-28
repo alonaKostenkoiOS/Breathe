@@ -9,6 +9,7 @@ final class CravingsViewModel {
     private(set) var insights: CravingInsights = .empty
     private(set) var triggerBreakdown: [TriggerBreakdown] = []
     private(set) var hourly: [HourlyCravings] = []
+    private(set) var hasLoadError = false
 
     private let store: any CravingStoring
     private let analyzer: CravingAnalyzer
@@ -22,11 +23,13 @@ final class CravingsViewModel {
 
     func load() async {
         do {
+            hasLoadError = false
             cravings = try await store.all()
             insights = analyzer.insights(from: cravings)
             triggerBreakdown = analyzer.breakdownByTrigger(cravings)
             hourly = analyzer.cravingsByHour(cravings)
         } catch {
+            hasLoadError = true
             cravings = []
             insights = .empty
             triggerBreakdown = []
