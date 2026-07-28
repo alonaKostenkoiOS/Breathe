@@ -23,14 +23,14 @@ final class ScreenshotTests: XCTestCase {
 
     /// English walkthrough of every screen.
     func testCaptureScreens() {
-        let app = makeApp()
+        let app = makeApp(extraArguments: ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"])
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["smoke-free"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Your smoke-free journey"].waitForExistence(timeout: 10))
         capture("01-dashboard")
 
-        app.tabBars.buttons["Recovery"].tap()
-        XCTAssertTrue(app.navigationBars["Recovery"].waitForExistence(timeout: 5))
+        app.tabBars.buttons["Progress"].tap()
+        XCTAssertTrue(app.navigationBars["Progress"].waitForExistence(timeout: 5))
         capture("02-recovery")
 
         app.tabBars.buttons["Cravings"].tap()
@@ -43,8 +43,14 @@ final class ScreenshotTests: XCTestCase {
 
         app.tabBars.buttons["Cravings"].tap()
         app.navigationBars["Cravings"].buttons["Log a craving"].tap()
-        XCTAssertTrue(app.navigationBars["Log craving"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Log a craving"].waitForExistence(timeout: 5))
         capture("05-log-craving")
+
+        app.buttons["Close"].tap()
+        app.tabBars.buttons["Home"].tap()
+        app.buttons["I’m having a craving"].tap()
+        XCTAssertTrue(app.staticTexts["Craving Rescue"].waitForExistence(timeout: 5))
+        capture("06-craving-rescue")
     }
 
     /// Same dashboard rendered in Ukrainian, to show off localisation.
@@ -58,7 +64,7 @@ final class ScreenshotTests: XCTestCase {
             springboard.buttons["Cancel"].tap()
         }
 
-        XCTAssertTrue(app.staticTexts["без цигарок"].waitForExistence(timeout: 10))
-        capture("06-ukrainian")
+        XCTAssertTrue(app.navigationBars["Головна"].waitForExistence(timeout: 10))
+        capture("07-ukrainian")
     }
 }

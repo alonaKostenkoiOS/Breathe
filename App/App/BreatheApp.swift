@@ -14,6 +14,7 @@ struct BreatheApp: App {
         WindowGroup {
             RootView()
                 .environment(environment)
+                .tint(.breatheAccent)
         }
     }
 }
@@ -24,7 +25,7 @@ struct RootView: View {
     @Environment(AppEnvironment.self) private var environment
 
     var body: some View {
-        if environment.planStore.hasPlan {
+        if environment.planStore.isOnboardingComplete {
             MainTabView()
         } else {
             OnboardingView()
@@ -36,13 +37,13 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             DashboardView()
-                .tabItem { Label("Today", systemImage: "lungs.fill") }
-
-            MilestonesView()
-                .tabItem { Label("Recovery", systemImage: "heart.fill") }
+                .tabItem { Label("Home", systemImage: "house.fill") }
 
             CravingsView()
-                .tabItem { Label("Cravings", systemImage: "bolt.heart") }
+                .tabItem { Label("Cravings", systemImage: "waveform.path.ecg") }
+
+            MilestonesView()
+                .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis") }
 
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape.fill") }
