@@ -32,8 +32,8 @@ struct CravingsView: View {
     }
 
     private func content(_ model: CravingsViewModel) -> some View {
-        BreatheScreen {
-            VStack(alignment: .leading, spacing: BreatheSpacing.lg) {
+        BreatheScreen { metrics in
+            VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
                 BreatheBanner(icon: "waveform.path.ecg", title: "Notice without judgment",
                               message: "Each entry helps reveal when a little extra support could help.")
                 if model.hasLoadError {
@@ -45,62 +45,67 @@ struct CravingsView: View {
                                       message: "When you record difficult moments, Breathe can start finding your personal patterns.",
                                       actionTitle: "Log a craving", action: { isLogging = true })
                 } else {
-                    insightSummary(model)
-                    weeklyTrend(model.cravings)
-                    history(model)
+                    insightSummary(model, metrics)
+                    weeklyTrend(model.cravings, metrics)
+                    history(model, metrics)
                 }
-            }.padding(.bottom, BreatheSpacing.xl)
+            }.padding(.bottom, metrics.majorSpacing)
         }
     }
 
-    private func insightSummary(_ model: CravingsViewModel) -> some View {
-        VStack(alignment: .leading, spacing: BreatheSpacing.sm) {
+    private func insightSummary(_ model: CravingsViewModel, _ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.internalSpacing) {
             BreatheSectionHeader(title: "Your recent pattern")
             BreatheCard(tint: .breatheSurfaceSoft) {
-                VStack(alignment: .leading, spacing: BreatheSpacing.sm) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text("\(Int(model.insights.resistanceRate * 100))%").font(.breatheMetric).monospacedDigit()
-                        Text("of cravings passed without smoking").font(.breatheCallout).foregroundStyle(Color.breatheTextSecondary)
-                    }
-                    if let top = model.insights.topTrigger {
-                        Label("Your most common recent trigger was \(top.label.lowercased()).", systemImage: top.symbol)
-                            .font(.breatheCallout).foregroundStyle(Color.breatheTextSecondary)
-                    }
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline, spacing: metrics.internalSpacing) { insightRate(model, metrics) }
+                    VStack(alignment: .leading, spacing: metrics.compactSpacing) { insightRate(model, metrics) }
+                }
+                if let top = model.insights.topTrigger {
+                    Label("Your most common recent trigger was \(top.label.lowercased()).", systemImage: top.symbol)
+                        .font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
     }
 
-    private func weeklyTrend(_ cravings: [Craving]) -> some View {
+    @ViewBuilder private func insightRate(_ model: CravingsViewModel, _ metrics: AppLayoutMetrics) -> some View {
+        Text("\(Int(model.insights.resistanceRate * 100))%").font(AppTypography.metric(for: metrics.mode)).monospacedDigit()
+        Text("of cravings passed without smoking").font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func weeklyTrend(_ cravings: [Craving], _ metrics: AppLayoutMetrics) -> some View {
         let recent = cravings.filter { $0.date > Date().addingTimeInterval(-7 * 86_400) }
-        return VStack(alignment: .leading, spacing: BreatheSpacing.sm) {
+        return VStack(alignment: .leading, spacing: metrics.internalSpacing) {
             BreatheSectionHeader(title: "This week", detail: "A simple view of your difficult moments.")
             BreatheCard {
                 Chart(recent) { item in
                     BarMark(x: .value("Day", item.date, unit: .day), y: .value("Intensity", item.intensity))
                         .foregroundStyle(Color.breatheAccentMedium)
                         .cornerRadius(4)
-                }.frame(height: 150).chartLegend(.hidden)
+                }.frame(height: metrics.chartHeight).chartLegend(.hidden)
                 Text(recent.isEmpty ? "No cravings recorded in the last seven days." : "You logged \(recent.count) difficult moments in the last seven days.")
-                    .font(.breatheCallout).foregroundStyle(Color.breatheTextSecondary).padding(.top, BreatheSpacing.xs)
+                    .font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                    .fixedSize(horizontal: false, vertical: true).padding(.top, metrics.compactSpacing)
             }
         }
     }
 
-    private func history(_ model: CravingsViewModel) -> some View {
-        VStack(alignment: .leading, spacing: BreatheSpacing.sm) {
+    private func history(_ model: CravingsViewModel, _ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.internalSpacing) {
             BreatheSectionHeader(title: "History")
             ForEach(model.cravings) { craving in
                 BreatheCard {
-                    HStack(spacing: BreatheSpacing.sm) {
+                    HStack(spacing: metrics.internalSpacing) {
                         Image(systemName: craving.didResist ? "checkmark.shield.fill" : "heart.fill")
                             .foregroundStyle(Color.breatheAccent).frame(width: 32)
-                        VStack(alignment: .leading, spacing: BreatheSpacing.xxs) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text(LocalizedStringKey(craving.trigger.label)).font(.headline)
                             Text(craving.date, format: .dateTime.weekday(.wide).hour().minute())
-                                .font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary)
+                                .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
                         }
-                        Spacer(); Text("\(craving.intensity)/5").font(.breatheCallout.weight(.semibold)).monospacedDigit()
+                        Spacer(); Text("\(craving.intensity)/5").font(AppTypography.callout(for: metrics.mode).weight(.semibold)).monospacedDigit()
                     }
                 }.contextMenu { Button("Delete", role: .destructive) { Task { await model.delete(craving) } } }
             }
