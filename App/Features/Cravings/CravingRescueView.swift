@@ -9,37 +9,37 @@ struct CravingRescueView: View {
     @State private var finished = false
 
     var body: some View {
-        BreatheScreen(scrollable: false) {
-            VStack(spacing: BreatheSpacing.xl) {
+        BreatheScreen { metrics in
+            VStack(spacing: metrics.sectionSpacing) {
                 HStack {
                     BreatheIconButton(icon: "xmark", label: "Close rescue", action: { dismiss() })
                     Spacer()
                     Text("Craving Rescue").font(.headline)
-                    Spacer(); Color.clear.frame(width: 44, height: 44)
+                    Spacer(); Color.clear.frame(width: 44, height: 44).accessibilityHidden(true)
                 }
-                Spacer()
-                if finished { checkIn } else { breathing }
-                Spacer()
+                if finished { checkIn(metrics) } else { breathing(metrics) }
             }
         }
         .interactiveDismissDisabled(!finished)
         .task { await runTimer() }
     }
 
-    private var breathing: some View {
-        VStack(spacing: BreatheSpacing.xl) {
+    private func breathing(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(spacing: metrics.sectionSpacing) {
             ZStack {
-                Circle().fill(Color.breatheAccentSoft).frame(width: 220, height: 220)
+                Circle().fill(Color.breatheAccentSoft).frame(width: metrics.breathingDiameter, height: metrics.breathingDiameter)
                     .scaleEffect(reduceMotion ? 1 : (expanding ? 1 : 0.68))
-                Circle().stroke(Color.breatheAccentMedium, lineWidth: 2).frame(width: 180, height: 180)
-                VStack(spacing: BreatheSpacing.xs) {
-                    Text(expanding ? "Breathe in" : "Breathe out").font(.breatheSectionTitle)
-                    Text("\(remaining)s").font(.breatheMetric).monospacedDigit()
+                Circle().stroke(Color.breatheAccentMedium, lineWidth: 2)
+                    .frame(width: metrics.breathingDiameter * 0.82, height: metrics.breathingDiameter * 0.82)
+                VStack(spacing: metrics.compactSpacing) {
+                    Text(expanding ? "Breathe in" : "Breathe out").font(AppTypography.sectionTitle(for: metrics.mode))
+                    Text("\(remaining)s").font(AppTypography.metric(for: metrics.mode)).monospacedDigit()
                 }
             }
             .animation(reduceMotion ? nil : .easeInOut(duration: 4), value: expanding)
             Text("This moment will pass. Stay with your breath.")
-                .font(.breatheBody).foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.center)
+                .font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             if let personalReason, !personalReason.isEmpty {
                 BreatheBanner(icon: "heart.fill", title: "Remember why you started", message: LocalizedStringKey(personalReason), tint: .breatheYellow)
             }
@@ -47,11 +47,11 @@ struct CravingRescueView: View {
         }
     }
 
-    private var checkIn: some View {
-        VStack(spacing: BreatheSpacing.lg) {
-            Image(systemName: "leaf.circle.fill").font(.system(size: 64)).foregroundStyle(Color.breatheAccent)
-            Text("How are you feeling now?").font(.breatheLargeTitle).multilineTextAlignment(.center)
-            Text("Whatever the answer, taking this pause mattered.").foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.center)
+    private func checkIn(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(spacing: metrics.sectionSpacing) {
+            Image(systemName: "leaf.circle.fill").font(.system(size: metrics.mode == .compact ? 48 : 58)).foregroundStyle(Color.breatheAccent)
+            Text("How are you feeling now?").font(AppTypography.heroTitle(for: metrics.mode)).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            Text("Whatever the answer, taking this pause mattered.").font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             BreathePrimaryButton(title: "The craving passed") { BreatheFeedback.success(); dismiss() }
             BreatheSecondaryButton(title: "I need another minute") { remaining = 60; finished = false }
             Button("Close for now") { dismiss() }.frame(minHeight: 44).foregroundStyle(Color.breatheTextSecondary)

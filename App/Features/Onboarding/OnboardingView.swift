@@ -17,12 +17,8 @@ struct OnboardingView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color.breatheBackground.ignoresSafeArea()
-                if let draft { screen(draft) } else { ProgressView() }
-            }
-            .safeAreaInset(edge: .top) {
-                if step != .welcome { BreatheProgressBar(value: progress).padding(.horizontal, BreatheSpacing.screen) }
+            BreatheScreen { metrics in
+                if let draft { screen(draft, metrics: metrics) } else { ProgressView() }
             }
             .toolbar {
                 if step != .welcome {
@@ -37,26 +33,23 @@ struct OnboardingView: View {
         .onChange(of: draft) { _, value in if let value { environment.planStore.saveDraft(value) } }
     }
 
-    @ViewBuilder private func screen(_ value: OnboardingDraft) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: BreatheSpacing.lg) {
-                switch step {
-                case .welcome: welcome
-                case .status: status
-                case .quitDate: quitDate
-                case .routine: previousRoutine
-                case .firstCigarette: firstCigarette
-                case .triggers: triggers
-                case .routineTiming: routineTiming
-                case .motivation: motivation
-                case .savingsGoal: savingsGoal
-                case .smartSupport: smartSupport
-                case .notifications: notifications
-                case .summary: summary(value.profile)
-                }
+    @ViewBuilder private func screen(_ value: OnboardingDraft, metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            if step != .welcome { BreatheProgressBar(value: progress) }
+            switch step {
+            case .welcome: welcome(metrics)
+            case .status: status
+            case .quitDate: quitDate
+            case .routine: previousRoutine
+            case .firstCigarette: firstCigarette
+            case .triggers: triggers
+            case .routineTiming: routineTiming
+            case .motivation: motivation
+            case .savingsGoal: savingsGoal(metrics)
+            case .smartSupport: smartSupport
+            case .notifications: notifications
+            case .summary: summary(value.profile, metrics: metrics)
             }
-            .frame(maxWidth: 620, alignment: .leading)
-            .padding(BreatheSpacing.screen)
         }
         .scrollDismissesKeyboard(.interactively)
         .id(step)
@@ -66,22 +59,24 @@ struct OnboardingView: View {
         ))
     }
 
-    private var welcome: some View {
-        VStack(alignment: .leading, spacing: BreatheSpacing.lg) {
-            Image("OnboardingHero")
-                .resizable().scaledToFill().frame(maxWidth: .infinity).frame(height: 330)
-                .clipShape(RoundedRectangle(cornerRadius: BreatheRadius.hero))
-                .overlay(alignment: .topLeading) {
-                    Label("Breathe", systemImage: "leaf.fill").font(.headline).foregroundStyle(Color.breatheAccent)
-                        .padding(.horizontal, BreatheSpacing.md).frame(minHeight: 44)
-                        .background(.ultraThinMaterial, in: Capsule()).padding(BreatheSpacing.md)
-                }
-                .accessibilityLabel("A peaceful path through green hills toward sunrise")
+    private func welcome(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            if metrics.heroImageHeight > 0 {
+                Image("OnboardingHero")
+                    .resizable().scaledToFill().frame(maxWidth: .infinity).frame(height: metrics.heroImageHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+                    .overlay(alignment: .topLeading) {
+                        Label("Breathe", systemImage: "leaf.fill").font(.headline).foregroundStyle(Color.breatheAccent)
+                            .padding(.horizontal, metrics.internalSpacing).frame(minHeight: 44)
+                            .background(.ultraThinMaterial, in: Capsule()).padding(metrics.internalSpacing)
+                    }
+                    .accessibilityLabel("A peaceful path through green hills toward sunrise")
+            }
             title("Quit smoking with a plan that adapts to you",
                   "Breathe tracks your progress, learns your difficult moments, and helps you get through cravings before they turn into slips.")
             primary("Get Started") { environment.onboardingAnalytics.track(.started); advance() }
             Label("Your data stays on your device.", systemImage: "lock.fill")
-                .font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary)
+                .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
         }
     }
 
@@ -190,13 +185,19 @@ struct OnboardingView: View {
         }
     }
 
-    private var savingsGoal: some View {
+    private func savingsGoal(_ metrics: AppLayoutMetrics) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             title("What would you love to save for?")
             TextField("Goal name", text: $goalName).textFieldStyle(.roundedBorder)
-            HStack {
-                TextField("Emoji", text: $goalEmoji).frame(width: 72).textFieldStyle(.roundedBorder)
-                TextField("Target amount", text: $goalAmountText).keyboardType(.decimalPad).textFieldStyle(.roundedBorder)
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    TextField("Emoji", text: $goalEmoji).frame(width: metrics.buttonHeight + metrics.internalSpacing).textFieldStyle(.roundedBorder)
+                    TextField("Target amount", text: $goalAmountText).keyboardType(.decimalPad).textFieldStyle(.roundedBorder)
+                }
+                VStack {
+                    TextField("Emoji", text: $goalEmoji).textFieldStyle(.roundedBorder)
+                    TextField("Target amount", text: $goalAmountText).keyboardType(.decimalPad).textFieldStyle(.roundedBorder)
+                }
             }
             validation
             primary("Continue") {
@@ -235,11 +236,13 @@ struct OnboardingView: View {
         }
     }
 
-    private func summary(_ profile: QuitProfile) -> some View {
+    private func summary(_ profile: QuitProfile, metrics: AppLayoutMetrics) -> some View {
         let weekly = (profile.packPrice / Decimal(profile.cigarettesPerPack)) * Decimal(profile.cigarettesPerDay * 7)
         let next = environment.milestoneEngine.nextMilestone(for: profile.quitPlan, at: environment.dateProvider.now())
         return VStack(alignment: .leading, spacing: 18) {
-            Image("PlanReadyBotanical").resizable().scaledToFit().frame(maxWidth: .infinity).frame(height: 190).accessibilityHidden(true)
+            if metrics.botanicalHeight > 0 {
+                Image("PlanReadyBotanical").resizable().scaledToFit().frame(maxWidth: .infinity).frame(height: metrics.botanicalHeight).accessibilityHidden(true)
+            }
             title("Your smoke-free plan is ready")
             summaryRow("Estimated cigarettes avoided per day", "\(profile.cigarettesPerDay)")
             summaryRow("Estimated weekly savings", weekly.formatted(.currency(code: profile.currencyCode)))
@@ -250,7 +253,7 @@ struct OnboardingView: View {
             if let reason = profile.personalReason { summaryRow("Your reason", reason) }
             if environment.dateProvider.now().timeIntervalSince(profile.quitDate) < 3 * 86_400 {
                 Text("Your first three days may feel more challenging. We’ll support you around the moments you selected.")
-                    .padding().background(Color.breatheAccentSoft, in: RoundedRectangle(cornerRadius: BreatheRadius.card))
+                    .padding(metrics.cardPadding).background(Color.breatheAccentSoft, in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
             }
             primary("Start My Journey", action: complete)
         }
@@ -308,10 +311,7 @@ struct OnboardingView: View {
     // MARK: Components
 
     private func title(_ heading: LocalizedStringKey, _ detail: LocalizedStringKey? = nil) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(heading).font(.breatheLargeTitle).accessibilityAddTraits(.isHeader)
-            if let detail { Text(detail).font(.breatheBody).foregroundStyle(Color.breatheTextSecondary) }
-        }
+        OnboardingTitle(heading: heading, detail: detail)
     }
 
     private func primary(_ label: LocalizedStringKey, disabled: Bool = false, action: @escaping () -> Void) -> some View {
@@ -339,7 +339,7 @@ struct OnboardingView: View {
 
     private func summaryRow(_ label: LocalizedStringKey, _ value: String) -> some View {
         BreatheCard(tint: .breatheSurfaceSoft) {
-            VStack(alignment: .leading, spacing: 4) { Text(label).font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary); Text(value).font(.headline) }
+            VStack(alignment: .leading, spacing: 4) { Text(label).font(.caption).foregroundStyle(Color.breatheTextSecondary); Text(value).font(.headline).fixedSize(horizontal: false, vertical: true) }
         }
     }
 
@@ -379,8 +379,7 @@ struct OnboardingView: View {
             if enabled {
                 DatePicker("Time", selection: Binding(get: { date(for: existing) }, set: { setEvent(type, date: $0) }), displayedComponents: .hourAndMinute)
             }
-        }.padding().background(Color.breatheSurface, in: RoundedRectangle(cornerRadius: BreatheRadius.card))
-            .overlay(RoundedRectangle(cornerRadius: BreatheRadius.card).stroke(Color.breatheDivider))
+        }.modifier(RoutineEventCardStyle())
     }
 
     private func setEvent(_ type: RoutineEventType, enabled: Bool? = nil, date: Date? = nil) {
@@ -415,4 +414,46 @@ private func routineEventKey(_ item: RoutineEventType) -> String {
     switch item { case .morningCoffee: "Morning coffee"; case .breakfast: "Breakfast"; case .lunch: "Lunch"; case .workBreak: "Work break"; case .dinner: "Dinner"; case .evening: "Evening"; case .bedtime: "Bedtime" }
 }
 
-#Preview { OnboardingView().environment(AppEnvironment.preview()) }
+private struct OnboardingTitle: View {
+    @Environment(\.appLayoutMetrics) private var metrics
+    let heading: LocalizedStringKey
+    let detail: LocalizedStringKey?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: metrics.compactSpacing) {
+            Text(heading)
+                .font(AppTypography.heroTitle(for: metrics.mode))
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+            if let detail {
+                Text(detail)
+                    .font(AppTypography.body(for: metrics.mode))
+                    .foregroundStyle(Color.breatheTextSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+}
+
+private struct RoutineEventCardStyle: ViewModifier {
+    @Environment(\.appLayoutMetrics) private var metrics
+
+    func body(content: Content) -> some View {
+        content
+            .padding(metrics.cardPadding)
+            .background(Color.breatheSurface, in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous).stroke(Color.breatheDivider))
+    }
+}
+
+#Preview("Ukrainian") {
+    OnboardingView().environment(AppEnvironment.preview())
+        .environment(\.locale, Locale(identifier: "uk"))
+        .previewDevice(PreviewDevice(rawValue: "iPhone 17e"))
+}
+
+#Preview("Accessibility XXXL") {
+    OnboardingView().environment(AppEnvironment.preview())
+        .environment(\.dynamicTypeSize, .accessibility3)
+        .previewDevice(PreviewDevice(rawValue: "iPhone 17 Pro"))
+}

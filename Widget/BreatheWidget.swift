@@ -50,16 +50,17 @@ struct BreatheWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let metrics = WidgetLayoutMetrics(family: family)
+        VStack(alignment: .leading, spacing: metrics.spacing) {
             Label("A moment for you", systemImage: "leaf.fill")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(Color(red: 0.05, green: 0.35, blue: 0.26))
 
             Text(entry.fact.text)
-                .font(family == .systemSmall ? .caption : .callout)
+                .font(metrics.factFont)
                 .fontWeight(.medium)
                 .minimumScaleFactor(0.8)
-                .lineLimit(family == .systemSmall ? 5 : 4)
+                .lineLimit(metrics.lineLimit)
 
             if family != .systemSmall, let source = entry.fact.source {
                 Spacer(minLength: 0)
@@ -69,6 +70,28 @@ struct BreatheWidgetView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+}
+
+private struct WidgetLayoutMetrics {
+    let family: WidgetFamily
+
+    var spacing: CGFloat { family == .systemSmall ? 6 : 10 }
+    var factFont: Font {
+        switch family {
+        case .systemSmall: .caption
+        case .systemMedium: .callout
+        case .systemLarge: .body
+        default: .caption
+        }
+    }
+    var lineLimit: Int {
+        switch family {
+        case .systemSmall: 5
+        case .systemMedium: 4
+        case .systemLarge: 8
+        default: 3
+        }
     }
 }
 
@@ -82,7 +105,7 @@ struct BreatheWidget: Widget {
         }
         .configurationDisplayName("Daily Motivation")
         .description("A daily reminder of how your body recovers while you stay smoke-free.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 

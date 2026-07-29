@@ -1,23 +1,69 @@
 import SwiftUI
 import UIKit
 
-enum BreatheSpacing {
-    static let xxs: CGFloat = 4
-    static let xs: CGFloat = 8
-    static let sm: CGFloat = 12
-    static let md: CGFloat = 16
-    static let screen: CGFloat = 20
-    static let lg: CGFloat = 24
-    static let xl: CGFloat = 32
-    static let hero: CGFloat = 40
+enum AppLayoutMode: Sendable {
+    case compact, regular, expanded
+
+    static func resolve(size: CGSize, dynamicTypeSize: DynamicTypeSize) -> AppLayoutMode {
+        if dynamicTypeSize.isAccessibilitySize { return .compact }
+        if size.width < 375 || size.height < 700 { return .compact }
+        if size.width >= 700 { return .expanded }
+        return .regular
+    }
 }
 
-enum BreatheRadius {
-    static let control: CGFloat = 12
-    static let input: CGFloat = 14
-    static let card: CGFloat = 18
-    static let hero: CGFloat = 24
-    static let button: CGFloat = 15
+struct AppLayoutMetrics: Sendable, Equatable {
+    let mode: AppLayoutMode
+    let availableSize: CGSize
+    let accessibilityText: Bool
+
+    static let fallback = AppLayoutMetrics(mode: .regular, availableSize: CGSize(width: 390, height: 844), accessibilityText: false)
+
+    var screenPadding: CGFloat { switch mode { case .compact: 16; case .regular: 20; case .expanded: 28 } }
+    var sectionSpacing: CGFloat { switch mode { case .compact: 20; case .regular: 28; case .expanded: 32 } }
+    var cardPadding: CGFloat { switch mode { case .compact: 14; case .regular: 16; case .expanded: 20 } }
+    var cardRadius: CGFloat { mode == .compact ? 16 : 20 }
+    var buttonHeight: CGFloat { switch mode { case .compact: 52; case .regular: 56; case .expanded: 58 } }
+    var controlRadius: CGFloat { mode == .compact ? 12 : 14 }
+    var internalSpacing: CGFloat { mode == .compact ? 10 : 12 }
+    var compactSpacing: CGFloat { mode == .compact ? 6 : 8 }
+    var majorSpacing: CGFloat { mode == .compact ? 24 : 32 }
+    var heroImageHeight: CGFloat {
+        guard !accessibilityText else { return 0 }
+        let proposed = availableSize.height * (mode == .compact ? 0.29 : 0.34)
+        return min(max(proposed, mode == .compact ? 200 : 240), mode == .compact ? 250 : 330)
+    }
+    var botanicalHeight: CGFloat { accessibilityText ? 0 : (mode == .compact ? 130 : 180) }
+    var metricColumns: [GridItem] {
+        if accessibilityText || availableSize.width - screenPadding * 2 < 350 { return [GridItem(.flexible())] }
+        return [GridItem(.flexible()), GridItem(.flexible())]
+    }
+    var chartHeight: CGFloat { mode == .compact ? 190 : (mode == .expanded ? 240 : 210) }
+    var breathingDiameter: CGFloat {
+        let widthLimit = availableSize.width - screenPadding * 4
+        let heightLimit = availableSize.height * (mode == .compact ? 0.25 : 0.31)
+        return min(max(min(widthLimit, heightLimit), 150), mode == .compact ? 190 : 230)
+    }
+    var maxContentWidth: CGFloat { mode == .expanded ? 720 : .infinity }
+}
+
+private struct AppLayoutMetricsKey: EnvironmentKey { static let defaultValue = AppLayoutMetrics.fallback }
+extension EnvironmentValues {
+    var appLayoutMetrics: AppLayoutMetrics {
+        get { self[AppLayoutMetricsKey.self] }
+        set { self[AppLayoutMetricsKey.self] = newValue }
+    }
+}
+
+enum AppTypography {
+    static func heroTitle(for mode: AppLayoutMode) -> Font { .system(mode == .compact ? .title : .largeTitle, design: .serif, weight: .bold) }
+    static func screenTitle(for mode: AppLayoutMode) -> Font { .system(mode == .compact ? .title2 : .title, weight: .bold) }
+    static func sectionTitle(for mode: AppLayoutMode) -> Font { .system(mode == .compact ? .headline : .title3, weight: .semibold) }
+    static func body(for mode: AppLayoutMode) -> Font { mode == .compact ? .subheadline : .body }
+    static func callout(for mode: AppLayoutMode) -> Font { mode == .compact ? .subheadline : .callout }
+    static func button(for mode: AppLayoutMode) -> Font { .headline.weight(.semibold) }
+    static func caption(for mode: AppLayoutMode) -> Font { .caption }
+    static func metric(for mode: AppLayoutMode) -> Font { (mode == .compact ? Font.title : .largeTitle).weight(.semibold) }
 }
 
 extension Color {
@@ -39,36 +85,33 @@ extension Color {
     static let breatheDestructive = Color("Destructive")
 }
 
-extension Font {
-    static let breatheBrandTitle = Font.system(size: 42, weight: .bold, design: .serif)
-    static let breatheLargeTitle = Font.system(size: 34, weight: .bold, design: .serif)
-    static let breatheScreenTitle = Font.system(size: 28, weight: .bold)
-    static let breatheSectionTitle = Font.system(size: 20, weight: .semibold)
-    static let breatheBody = Font.system(size: 17)
-    static let breatheCallout = Font.system(size: 15)
-    static let breatheCaption = Font.system(size: 13)
-    static let breatheMetric = Font.system(size: 32, weight: .semibold)
-}
-
 struct BreatheScreen<Content: View>: View {
     var scrollable = true
-    @ViewBuilder let content: () -> Content
+    @ViewBuilder let content: (AppLayoutMetrics) -> Content
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        ZStack {
-            Color.breatheBackground.ignoresSafeArea()
-            if scrollable {
-                ScrollView {
-                    content().frame(maxWidth: 680, alignment: .leading)
-                        .padding(.horizontal, BreatheSpacing.screen)
-                        .padding(.vertical, BreatheSpacing.md)
+        GeometryReader { proxy in
+            let mode = AppLayoutMode.resolve(size: proxy.size, dynamicTypeSize: dynamicTypeSize)
+            let metrics = AppLayoutMetrics(mode: mode, availableSize: proxy.size, accessibilityText: dynamicTypeSize.isAccessibilitySize)
+            ZStack {
+                Color.breatheBackground.ignoresSafeArea()
+                if scrollable {
+                    ScrollView {
+                        content(metrics).environment(\.appLayoutMetrics, metrics)
+                            .frame(maxWidth: metrics.maxContentWidth, alignment: .leading)
+                            .padding(.horizontal, metrics.screenPadding)
+                            .padding(.vertical, metrics.cardPadding)
+                            .frame(maxWidth: .infinity)
+                    }.scrollDismissesKeyboard(.interactively)
+                } else {
+                    content(metrics).environment(\.appLayoutMetrics, metrics)
+                        .frame(maxWidth: metrics.maxContentWidth, maxHeight: .infinity)
+                        .padding(.horizontal, metrics.screenPadding)
                 }
-                .scrollDismissesKeyboard(.interactively)
-            } else {
-                content().padding(.horizontal, BreatheSpacing.screen)
             }
-        }
-        .foregroundStyle(Color.breatheText)
+            .foregroundStyle(Color.breatheText)
+        }.background(Color.breatheBackground)
     }
 }
 
@@ -77,14 +120,16 @@ struct BreathePrimaryButton: View {
     var icon: String?
     var disabled = false
     let action: () -> Void
+    @Environment(\.appLayoutMetrics) private var metrics
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: BreatheSpacing.xs) {
+            HStack(spacing: metrics.compactSpacing) {
                 if let icon { Image(systemName: icon) }
-                Text(title).font(.headline)
+                Text(title).font(AppTypography.button(for: metrics.mode)).fixedSize(horizontal: false, vertical: true)
             }
-            .frame(maxWidth: .infinity, minHeight: 52)
+            .frame(maxWidth: .infinity, minHeight: metrics.buttonHeight)
+            .padding(.vertical, metrics.accessibilityText ? 6 : 0)
         }
         .buttonStyle(BreathePrimaryButtonStyle())
         .disabled(disabled)
@@ -93,11 +138,12 @@ struct BreathePrimaryButton: View {
 
 private struct BreathePrimaryButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.appLayoutMetrics) private var metrics
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundStyle(.white)
             .background(configuration.isPressed ? Color.breatheAccentPressed : .breatheAccent,
-                        in: RoundedRectangle(cornerRadius: BreatheRadius.button))
+                        in: RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous))
             .opacity(configuration.isPressed ? 0.92 : 1)
             .scaleEffect(configuration.isPressed && !reduceMotion ? 0.985 : 1)
             .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: configuration.isPressed)
@@ -108,12 +154,14 @@ struct BreatheSecondaryButton: View {
     let title: LocalizedStringKey
     var icon: String?
     let action: () -> Void
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
         Button(action: action) {
-            HStack { if let icon { Image(systemName: icon) }; Text(title).font(.headline) }
-                .frame(maxWidth: .infinity, minHeight: 50)
+            HStack { if let icon { Image(systemName: icon) }; Text(title).font(AppTypography.button(for: metrics.mode)).fixedSize(horizontal: false, vertical: true) }
+                .frame(maxWidth: .infinity, minHeight: metrics.buttonHeight)
+                .padding(.vertical, metrics.accessibilityText ? 6 : 0)
                 .foregroundStyle(Color.breatheAccent)
-                .background(Color.breatheAccentSoft, in: RoundedRectangle(cornerRadius: BreatheRadius.button))
+                .background(Color.breatheAccentSoft, in: RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous))
         }.buttonStyle(.plain)
     }
 }
@@ -132,10 +180,11 @@ struct BreatheCard<Content: View>: View {
     var tint: Color = .breatheSurface
     var elevated = false
     @ViewBuilder let content: () -> Content
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
-        content().frame(maxWidth: .infinity, alignment: .leading).padding(BreatheSpacing.md)
-            .background(tint, in: RoundedRectangle(cornerRadius: BreatheRadius.card))
-            .overlay(RoundedRectangle(cornerRadius: BreatheRadius.card).stroke(Color.breatheDivider, lineWidth: 1))
+        content().frame(maxWidth: .infinity, alignment: .leading).padding(metrics.cardPadding)
+            .background(tint, in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous).stroke(Color.breatheDivider, lineWidth: 1))
             .shadow(color: elevated ? .black.opacity(0.05) : .clear, radius: 12, y: 4)
     }
 }
@@ -145,13 +194,14 @@ struct BreatheMetricCard: View {
     let value: String
     let title: LocalizedStringKey
     var tint: Color = .breatheAccentSoft
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
         BreatheCard(tint: tint) {
-            VStack(alignment: .leading, spacing: BreatheSpacing.xs) {
+            VStack(alignment: .leading, spacing: metrics.compactSpacing) {
                 Image(systemName: icon).font(.title3).foregroundStyle(Color.breatheAccent)
-                Text(value).font(.breatheMetric).monospacedDigit().minimumScaleFactor(0.75)
+                Text(value).font(AppTypography.metric(for: metrics.mode)).monospacedDigit().minimumScaleFactor(0.8)
                     .contentTransition(.numericText())
-                Text(title).font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary)
+                Text(title).font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
             }
         }.accessibilityElement(children: .combine)
     }
@@ -163,23 +213,24 @@ struct BreatheSelectionCard: View {
     var icon: String?
     let selected: Bool
     let action: () -> Void
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
         Button(action: action) {
-            HStack(spacing: BreatheSpacing.sm) {
+            HStack(spacing: metrics.internalSpacing) {
                 if let icon { Image(systemName: icon).foregroundStyle(Color.breatheAccent).frame(width: 26) }
-                VStack(alignment: .leading, spacing: BreatheSpacing.xxs) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(title).font(.body.weight(.semibold)).multilineTextAlignment(.leading)
-                    if let detail { Text(detail).font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.leading) }
+                    if let detail { Text(detail).font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.leading).fixedSize(horizontal: false, vertical: true) }
                 }
-                Spacer(minLength: BreatheSpacing.xs)
+                Spacer(minLength: metrics.compactSpacing)
                 Image(systemName: selected ? "checkmark.circle.fill" : "circle")
                     .font(.title3).foregroundStyle(selected ? Color.breatheAccent : .breatheTextTertiary)
-            }.frame(minHeight: 48).padding(BreatheSpacing.md)
+            }.frame(minHeight: 44).padding(metrics.cardPadding)
         }
         .buttonStyle(.plain)
         .background(selected ? Color.breatheAccentSoft : .breatheSurface,
-                    in: RoundedRectangle(cornerRadius: BreatheRadius.card))
-        .overlay(RoundedRectangle(cornerRadius: BreatheRadius.card)
+                    in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous)
             .stroke(selected ? Color.breatheAccent : .breatheDivider, lineWidth: selected ? 2 : 1))
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
@@ -190,13 +241,14 @@ struct BreatheChip: View {
     var icon: String?
     let selected: Bool
     let action: () -> Void
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
+            HStack(spacing: metrics.compactSpacing) {
                 if let icon { Image(systemName: icon) }
                 Text(title)
                 if selected { Image(systemName: "checkmark").font(.caption.bold()) }
-            }.padding(.horizontal, 14).frame(minHeight: 44)
+            }.padding(.horizontal, metrics.cardPadding).frame(minHeight: 44)
         }.buttonStyle(.plain)
             .foregroundStyle(selected ? Color.breatheText : .breatheTextSecondary)
             .background(selected ? Color.breatheAccentSoft : .breatheSurface, in: Capsule())
@@ -216,10 +268,11 @@ struct BreatheProgressBar: View {
 struct BreatheSectionHeader: View {
     let title: LocalizedStringKey
     var detail: LocalizedStringKey?
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
-        VStack(alignment: .leading, spacing: BreatheSpacing.xxs) {
-            Text(title).font(.breatheSectionTitle)
-            if let detail { Text(detail).font(.breatheCallout).foregroundStyle(Color.breatheTextSecondary) }
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title).font(AppTypography.sectionTitle(for: metrics.mode)).fixedSize(horizontal: false, vertical: true)
+            if let detail { Text(detail).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true) }
         }.accessibilityElement(children: .combine).accessibilityAddTraits(.isHeader)
     }
 }
@@ -230,12 +283,13 @@ struct BreatheEmptyState: View {
     let message: LocalizedStringKey
     var actionTitle: LocalizedStringKey?
     var action: (() -> Void)?
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
         BreatheCard(tint: .breatheSurfaceSoft) {
-            VStack(spacing: BreatheSpacing.sm) {
-                Image(systemName: icon).font(.system(size: 36)).foregroundStyle(Color.breatheAccent)
-                Text(title).font(.breatheSectionTitle).multilineTextAlignment(.center)
-                Text(message).font(.breatheCallout).foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.center)
+            VStack(spacing: metrics.internalSpacing) {
+                Image(systemName: icon).font(.system(size: metrics.mode == .compact ? 30 : 36)).foregroundStyle(Color.breatheAccent)
+                Text(title).font(AppTypography.sectionTitle(for: metrics.mode)).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                Text(message).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
                 if let actionTitle, let action { BreatheSecondaryButton(title: actionTitle, action: action) }
             }.frame(maxWidth: .infinity)
         }.accessibilityElement(children: .contain)
@@ -247,15 +301,16 @@ struct BreatheBanner: View {
     let title: LocalizedStringKey
     let message: LocalizedStringKey
     var tint: Color = .breatheSky
+    @Environment(\.appLayoutMetrics) private var metrics
     var body: some View {
-        HStack(alignment: .top, spacing: BreatheSpacing.sm) {
+        HStack(alignment: .top, spacing: metrics.internalSpacing) {
             Image(systemName: icon).foregroundStyle(Color.breatheAccent)
-            VStack(alignment: .leading, spacing: BreatheSpacing.xxs) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.headline)
-                Text(message).font(.breatheCallout).foregroundStyle(Color.breatheTextSecondary)
+                Text(message).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
             }
-        }.padding(BreatheSpacing.md).frame(maxWidth: .infinity, alignment: .leading)
-            .background(tint, in: RoundedRectangle(cornerRadius: BreatheRadius.card))
+        }.padding(metrics.cardPadding).frame(maxWidth: .infinity, alignment: .leading)
+            .background(tint, in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
     }
 }
 
@@ -265,7 +320,7 @@ struct BreatheBanner: View {
 }
 
 struct BreatheFlowLayout: Layout {
-    var spacing: CGFloat = BreatheSpacing.xs
+    var spacing: CGFloat = 8
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         layout(proposal: proposal, subviews: subviews).size
     }

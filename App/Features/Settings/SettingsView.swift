@@ -18,18 +18,18 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            BreatheScreen {
-                VStack(alignment: .leading, spacing: BreatheSpacing.lg) {
-                    profileCard
-                    calculationsCard
-                    goalCard
-                    notificationsCard
-                    appearanceCard
-                    privacyCard
-                    aboutCard
+            BreatheScreen { metrics in
+                VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+                    profileCard(metrics)
+                    calculationsCard(metrics)
+                    goalCard(metrics)
+                    notificationsCard(metrics)
+                    appearanceCard(metrics)
+                    privacyCard(metrics)
+                    aboutCard(metrics)
                     Button("Start over", role: .destructive) { showResetConfirmation = true }
                         .foregroundStyle(Color.breatheDestructive).frame(maxWidth: .infinity, minHeight: 48)
-                }.padding(.bottom, BreatheSpacing.xl)
+                }.padding(.bottom, metrics.majorSpacing)
             }
             .navigationTitle("Settings")
             .toolbarBackground(Color.breatheBackground, for: .navigationBar)
@@ -43,8 +43,8 @@ struct SettingsView: View {
         }
     }
 
-    private var profileCard: some View {
-        settingsGroup("Quit profile", icon: "person.crop.circle") {
+    private func profileCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("Quit profile", icon: "person.crop.circle", metrics: metrics) {
             DatePicker("I quit on", selection: $quitDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
             Divider().overlay(Color.breatheDivider)
             Stepper("Cigarettes per day: \(cigarettesPerDay)", value: $cigarettesPerDay, in: 1...80)
@@ -53,18 +53,28 @@ struct SettingsView: View {
         }
     }
 
-    private var calculationsCard: some View {
-        settingsGroup("Currency and calculations", icon: "function") {
-            HStack { Text("Price per pack"); Spacer(); TextField("Price", value: $pricePerPack, format: .number).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(maxWidth: 100) }
+    private func calculationsCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("Currency and calculations", icon: "function", metrics: metrics) {
+            ViewThatFits(in: .horizontal) {
+                HStack { Text("Price per pack"); Spacer(); priceField }
+                VStack(alignment: .leading, spacing: metrics.compactSpacing) { Text("Price per pack"); priceField }
+            }
             Picker("Currency", selection: $currencyCode) { ForEach(currencies, id: \.self) { Text($0).tag($0) } }
-            Text("These values only affect your progress estimates.").font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary)
+            Text("These values only affect your progress estimates.").font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
         }
     }
 
-    private var goalCard: some View {
-        settingsGroup("Savings goal", icon: "target") {
+    private var priceField: some View {
+        TextField("Price", value: $pricePerPack, format: .number).keyboardType(.decimalPad).multilineTextAlignment(.trailing)
+    }
+
+    private func goalCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("Savings goal", icon: "target", metrics: metrics) {
             TextField("What are you saving for?", text: $goalName).textFieldStyle(.roundedBorder)
-            HStack { Text("Target"); Spacer(); TextField("Amount", value: $goalTarget, format: .number).keyboardType(.decimalPad).multilineTextAlignment(.trailing); Text(currencyCode).foregroundStyle(Color.breatheTextSecondary) }
+            ViewThatFits(in: .horizontal) {
+                HStack { Text("Target"); Spacer(); goalAmountField }
+                VStack(alignment: .leading, spacing: metrics.compactSpacing) { Text("Target"); goalAmountField }
+            }
             BreatheSecondaryButton(title: "Save goal", action: saveGoal)
                 .disabled(goalName.trimmingCharacters(in: .whitespaces).isEmpty || goalTarget <= 0)
             if environment.planStore.goal != nil {
@@ -73,42 +83,46 @@ struct SettingsView: View {
         }
     }
 
-    private var notificationsCard: some View {
-        settingsGroup("Notifications", icon: "bell") {
+    private var goalAmountField: some View {
+        HStack { TextField("Amount", value: $goalTarget, format: .number).keyboardType(.decimalPad).multilineTextAlignment(.trailing); Text(currencyCode).foregroundStyle(Color.breatheTextSecondary) }
+    }
+
+    private func notificationsCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("Notifications", icon: "bell", metrics: metrics) {
             Toggle("Milestone reminders", isOn: $notificationsEnabled)
                 .onChange(of: notificationsEnabled) { _, enabled in Task { await updateNotifications(enabled: enabled) } }
-            Text("Celebrate important recovery moments. You can change this anytime.").font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary)
+            Text("Celebrate important recovery moments. You can change this anytime.").font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
         }
     }
 
-    private var appearanceCard: some View {
-        settingsGroup("App appearance", icon: "circle.lefthalf.filled") {
-            LabeledContent("Theme", value: "Follow System")
-            Text("Breathe automatically supports Light and Dark Mode.").font(.breatheCaption).foregroundStyle(Color.breatheTextSecondary)
+    private func appearanceCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("App appearance", icon: "circle.lefthalf.filled", metrics: metrics) {
+            ViewThatFits(in: .horizontal) { LabeledContent("Theme", value: "Follow System"); VStack(alignment: .leading) { Text("Theme"); Text("Follow System").foregroundStyle(Color.breatheTextSecondary) } }
+            Text("Breathe automatically supports Light and Dark Mode.").font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
         }
     }
 
-    private var privacyCard: some View {
-        settingsGroup("Data and privacy", icon: "lock.shield") {
+    private func privacyCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("Data and privacy", icon: "lock.shield", metrics: metrics) {
             Label("Your profile and craving history stay on this device.", systemImage: "iphone")
-                .font(.breatheCallout).foregroundStyle(Color.breatheTextSecondary)
+                .font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
         }
     }
 
-    private var aboutCard: some View {
-        settingsGroup("About", icon: "info.circle") {
-            LabeledContent("Version", value: appVersion)
+    private func aboutCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("About", icon: "info.circle", metrics: metrics) {
+            ViewThatFits(in: .horizontal) { LabeledContent("Version", value: appVersion); VStack(alignment: .leading) { Text("Version"); Text(appVersion).foregroundStyle(Color.breatheTextSecondary) } }
             Link(destination: URL(string: "https://github.com/alonaKostenkoiOS/Breathe")!) {
                 Label("Source code", systemImage: "chevron.left.forwardslash.chevron.right").frame(minHeight: 44)
             }.foregroundStyle(Color.breatheAccent)
         }
     }
 
-    private func settingsGroup<Content: View>(_ title: LocalizedStringKey, icon: String,
+    private func settingsGroup<Content: View>(_ title: LocalizedStringKey, icon: String, metrics: AppLayoutMetrics,
                                                @ViewBuilder content: @escaping () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: BreatheSpacing.sm) {
-            Label(title, systemImage: icon).font(.breatheSectionTitle).foregroundStyle(Color.breatheText)
-            BreatheCard { VStack(alignment: .leading, spacing: BreatheSpacing.md) { content() } }
+        VStack(alignment: .leading, spacing: metrics.internalSpacing) {
+            Label(title, systemImage: icon).font(AppTypography.sectionTitle(for: metrics.mode)).foregroundStyle(Color.breatheText).fixedSize(horizontal: false, vertical: true)
+            BreatheCard { VStack(alignment: .leading, spacing: metrics.cardPadding) { content() } }
         }
     }
 
