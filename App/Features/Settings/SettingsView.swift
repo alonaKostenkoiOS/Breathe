@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 import BreatheCore
 
 struct SettingsView: View {
@@ -11,19 +12,25 @@ struct SettingsView: View {
     @State private var goalName = ""
     @State private var goalTarget = 0.0
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
+    @AppStorage(AppLanguage.defaultsKey, store: AppLanguage.sharedDefaults) private var languageCode = AppLanguage.system.rawValue
     @State private var didLoad = false
     @State private var showResetConfirmation = false
     @State private var showSavedConfirmation = false
+    @State private var exportURL: URL?
     private let currencies = ["USD", "EUR", "GBP", "UAH", "PLN", "CZK"]
 
     var body: some View {
         NavigationStack {
             BreatheScreen { metrics in
                 VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
-                    profileCard(metrics)
-                    calculationsCard(metrics)
-                    goalCard(metrics)
+                    ProgramManagementCard(metrics: metrics)
+                    if environment.recoveryStore.primaryProgram?.programID == .nicotine {
+                        profileCard(metrics)
+                        calculationsCard(metrics)
+                        goalCard(metrics)
+                    }
                     notificationsCard(metrics)
+                    languageCard(metrics)
                     appearanceCard(metrics)
                     privacyCard(metrics)
                     aboutCard(metrics)
@@ -40,8 +47,15 @@ struct SettingsView: View {
             } message: { Text("This resets your quit plan. Your logged cravings are kept.") }
             .alert("Saved", isPresented: $showSavedConfirmation) { Button("OK", role: .cancel) {} }
             message: { Text("Your plan has been updated.") }
+            .onChange(of: languageCode) { _, _ in
+                WidgetCenter.shared.reloadAllTimelines()
+                if notificationsEnabled, let plan = environment.planStore.plan {
+                    Task { await scheduleMilestones(for: plan) }
+                }
+            }
         }
     }
+
 
     private func profileCard(_ metrics: AppLayoutMetrics) -> some View {
         settingsGroup("Quit profile", icon: "person.crop.circle", metrics: metrics) {
@@ -92,6 +106,11 @@ struct SettingsView: View {
             Toggle("Milestone reminders", isOn: $notificationsEnabled)
                 .onChange(of: notificationsEnabled) { _, enabled in Task { await updateNotifications(enabled: enabled) } }
             Text("Celebrate important recovery moments. You can change this anytime.").font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+            Toggle("notifications.discreet.title", isOn: Binding(
+                get: { environment.recoveryStore.state.discreetNotifications },
+                set: { enabled in environment.recoveryStore.setDiscreetNotifications(enabled) }
+            ))
+            Text("notifications.discreet.detail").font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -102,10 +121,30 @@ struct SettingsView: View {
         }
     }
 
+    private func languageCard(_ metrics: AppLayoutMetrics) -> some View {
+        settingsGroup("Language", icon: "globe", metrics: metrics) {
+            Picker("App language", selection: $languageCode) {
+                ForEach(AppLanguage.allCases) { language in
+                    if language == .system {
+                        Text("System Default").tag(language.rawValue)
+                    } else {
+                        Text(verbatim: language.nativeName).tag(language.rawValue)
+                    }
+                }
+            }
+            Text("Changing the language does not change your currency, quit date, or saved progress.")
+                .font(AppTypography.caption(for: metrics.mode))
+                .foregroundStyle(Color.breatheTextSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
     private func privacyCard(_ metrics: AppLayoutMetrics) -> some View {
         settingsGroup("Data and privacy", icon: "lock.shield", metrics: metrics) {
-            Label("Your profile and craving history stay on this device.", systemImage: "iphone")
+            Label("privacy.all_data_local", systemImage: "iphone")
                 .font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+            Button { prepareExport() } label: { Label("privacy.export.action", systemImage: "square.and.arrow.up").frame(minHeight: 44) }
+            if let exportURL { ShareLink(item: exportURL) { Label("privacy.share_export", systemImage: "doc") }.frame(minHeight: 44) }
         }
     }
 
@@ -149,6 +188,11 @@ struct SettingsView: View {
     }
     private func saveGoal() { environment.planStore.saveGoal(SavingsGoal(name: goalName, target: Decimal(goalTarget))); showSavedConfirmation = true; BreatheFeedback.success() }
     private func removeGoal() { environment.planStore.saveGoal(nil); goalName = ""; goalTarget = 0 }
+    private func prepareExport() {
+        guard let data = try? environment.recoveryStore.exportData() else { return }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("Breathe-Export.json")
+        try? data.write(to: url, options: .atomic); exportURL = url
+    }
     private func updateNotifications(enabled: Bool) async {
         guard enabled else { await environment.notificationService.cancelAll(); return }
         let granted = await environment.notificationService.requestAuthorization()
@@ -160,4 +204,79 @@ struct SettingsView: View {
     }
 }
 
+private struct ProgramManagementCard: View {
+    @Environment(AppEnvironment.self) private var environment
+    let metrics: AppLayoutMetrics
+    @State private var programToDelete: RecoveryProgram?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: metrics.internalSpacing) {
+            Label("programs.title", systemImage: "square.grid.2x2")
+                .font(AppTypography.sectionTitle(for: metrics.mode)).foregroundStyle(Color.breatheText)
+            BreatheCard {
+                VStack(alignment: .leading, spacing: metrics.cardPadding) {
+                    ForEach(environment.recoveryStore.state.programs) { program in
+                        row(program)
+                        Divider()
+                    }
+                    addMenu
+                }
+            }
+        }
+        .confirmationDialog("program.delete.title", isPresented: deletePresented, titleVisibility: .visible) {
+            Button("program.delete.action", role: .destructive, action: deleteSelected)
+            Button("Cancel", role: .cancel) { programToDelete = nil }
+        } message: { Text("program.delete.detail") }
+    }
+
+    private func row(_ program: RecoveryProgram) -> some View {
+        VStack(alignment: .leading, spacing: metrics.compactSpacing) {
+            HStack {
+                Label(program.programID.nameKey, systemImage: program.programID.definition.iconName)
+                Spacer()
+                if environment.recoveryStore.primaryProgram?.id == program.id {
+                    Text("program.primary").font(.caption).foregroundStyle(Color.breatheAccent)
+                }
+            }
+            HStack {
+                if environment.recoveryStore.primaryProgram?.id != program.id, program.state != .archived {
+                    Button("program.make_primary") { environment.recoveryStore.setPrimary(program.id) }.frame(minHeight: 44)
+                }
+                Button(program.state == .paused ? "program.resume" : "program.pause") {
+                    environment.recoveryStore.setState(program.state == .paused ? .active : .paused, for: program.id)
+                }.frame(minHeight: 44)
+                Menu {
+                    Button("program.archive") { environment.recoveryStore.setState(.archived, for: program.id) }
+                    Button("program.delete.action", role: .destructive) { programToDelete = program }
+                } label: { Image(systemName: "ellipsis.circle").frame(width: 44, height: 44) }
+            }.font(AppTypography.caption(for: metrics.mode))
+        }
+    }
+
+    private var addMenu: some View {
+        Menu {
+            ForEach(RecoveryProgramID.allCases) { id in
+                Button { _ = environment.recoveryStore.start(id) } label: {
+                    Label(id.nameKey, systemImage: id.definition.iconName)
+                }
+            }
+        } label: { Label("program.start_another", systemImage: "plus.circle.fill").frame(minHeight: 44) }
+    }
+
+    private var deletePresented: Binding<Bool> {
+        Binding(get: { programToDelete != nil }, set: { if !$0 { programToDelete = nil } })
+    }
+
+    private func deleteSelected() {
+        guard let programToDelete else { return }
+        environment.recoveryStore.deleteProgram(programToDelete.id)
+        self.programToDelete = nil
+    }
+}
+
 #Preview { SettingsView().environment(AppEnvironment.preview()) }
+
+#Preview("Simplified Chinese") {
+    SettingsView().environment(AppEnvironment.preview())
+        .environment(\.locale, Locale(identifier: "zh-Hans"))
+}

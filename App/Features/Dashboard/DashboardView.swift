@@ -3,9 +3,10 @@ import BreatheCore
 
 struct DashboardView: View {
     @Environment(AppEnvironment.self) private var environment
+    @Environment(\.locale) private var locale
     @State private var model: DashboardViewModel?
     @State private var showRescue = false
-    private let formatter = ProgressFormatter()
+    private var formatter: ProgressFormatter { ProgressFormatter(locale: locale) }
 
     var body: some View {
         NavigationStack {
@@ -18,7 +19,7 @@ struct DashboardView: View {
         .onAppear { if model == nil { model = DashboardViewModel(environment: environment) } }
         .task { await model?.loadFact(); await model?.startTicking() }
         .fullScreenCover(isPresented: $showRescue) {
-            CravingRescueView(personalReason: environment.planStore.profile?.personalReason)
+            CravingRescueView(personalReason: environment.planStore.profile?.personalReason, entryPoint: .home)
         }
     }
 
@@ -64,9 +65,10 @@ struct DashboardView: View {
                 Text("Every smoke-free moment is meaningful.")
                     .font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
                 if let next = model.nextMilestone {
+                    let milestoneTitle = String(localized: String.LocalizationValue(next.milestone.title), locale: locale)
                     VStack(alignment: .leading, spacing: metrics.compactSpacing) {
                         BreatheProgressBar(value: next.fraction)
-                        Text("Moving toward \(next.milestone.title.lowercased())")
+                        Text("Moving toward \(milestoneTitle.lowercased(with: locale))")
                             .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
                     }
                 }
@@ -80,16 +82,16 @@ struct DashboardView: View {
                 Image(systemName: "wind").font(.title2).frame(width: metrics.buttonHeight - 8, height: metrics.buttonHeight - 8)
                     .background(Color.breatheAccentSoft, in: Circle()).foregroundStyle(Color.breatheAccent)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("I’m having a craving").font(.headline)
-                    Text("Take a quiet minute with Breathe").font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+                    Text("Open Craving Coach").font(.headline)
+                    Text("Get support that fits this moment").font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(); Image(systemName: "chevron.right").foregroundStyle(Color.breatheTextTertiary)
             }.padding(metrics.cardPadding)
         }.buttonStyle(.plain).frame(minHeight: 72)
             .background(Color.breatheSurface, in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous).stroke(Color.breatheAccentMedium, lineWidth: 1.5))
-            .accessibilityLabel("I’m having a craving")
-            .accessibilityHint("Opens a guided breathing exercise")
+            .accessibilityLabel("Open Craving Coach")
+            .accessibilityHint("Opens personalized support for a craving")
     }
 
     private func progressMetrics(_ model: DashboardViewModel, _ metrics: AppLayoutMetrics) -> some View {
@@ -116,15 +118,14 @@ struct DashboardView: View {
     @ViewBuilder private func milestoneContent(_ status: MilestoneStatus, _ metrics: AppLayoutMetrics) -> some View {
                     Image(systemName: "sparkles").font(.title2).foregroundStyle(Color.breatheAccent)
                     VStack(alignment: .leading, spacing: metrics.compactSpacing) {
-                        Text(status.milestone.title).font(.headline)
-                        Text(status.milestone.detail).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+                        Text(LocalizedStringKey(status.milestone.title)).font(.headline)
+                        Text(LocalizedStringKey(status.milestone.detail)).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
                         BreatheProgressBar(value: status.fraction)
                     }
     }
 
     private func motivation(_ reason: String) -> some View {
         BreatheBanner(icon: "quote.opening", title: "Your reason", message: LocalizedStringKey(reason), tint: .breatheYellow)
-            .accessibilityLabel("Your reason: \(reason)")
     }
 
     private func goalCard(_ goal: SavingsGoal, _ progress: GoalProgress, _ model: DashboardViewModel, _ metrics: AppLayoutMetrics) -> some View {
@@ -133,7 +134,7 @@ struct DashboardView: View {
             BreatheSectionHeader(title: "Savings goal")
             BreatheCard(tint: .breatheSurfaceSoft) {
                 VStack(alignment: .leading, spacing: metrics.internalSpacing) {
-                    HStack { Label(goal.name, systemImage: "target").font(.headline); Spacer(); Text("\(Int(progress.fraction * 100))%").monospacedDigit() }
+                    HStack { Label(goal.name, systemImage: "target").font(.headline); Spacer(); Text(formatter.percentage(progress.fraction)).monospacedDigit() }
                     BreatheProgressBar(value: progress.fraction)
                     Text(progress.isReached ? "Goal reached — enjoy this moment." : "\(formatter.money(progress.remaining, currencyCode: currency)) to go")
                         .font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)

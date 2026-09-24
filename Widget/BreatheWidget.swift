@@ -48,29 +48,35 @@ struct FactProvider: TimelineProvider {
 struct BreatheWidgetView: View {
     let entry: FactEntry
     @Environment(\.widgetFamily) private var family
+    @AppStorage("app_language_preference", store: UserDefaults(suiteName: "group.com.breathe.app")) private var languageCode = "system"
+    @AppStorage("active_program_id", store: UserDefaults(suiteName: "group.com.breathe.app")) private var programID = "nicotine"
+    @AppStorage("discreet_notifications", store: UserDefaults(suiteName: "group.com.breathe.app")) private var discreet = true
 
     var body: some View {
         let metrics = WidgetLayoutMetrics(family: family)
         VStack(alignment: .leading, spacing: metrics.spacing) {
-            Label("A moment for you", systemImage: "leaf.fill")
+            Label(discreet ? "widget.discreet.title" : programNameKey, systemImage: discreet ? "leaf.fill" : programSymbol)
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(Color(red: 0.05, green: 0.35, blue: 0.26))
 
-            Text(entry.fact.text)
+            Text(discreet ? LocalizedStringKey("widget.discreet.detail") : LocalizedStringKey("widget.program.detail"))
                 .font(metrics.factFont)
                 .fontWeight(.medium)
                 .minimumScaleFactor(0.8)
                 .lineLimit(metrics.lineLimit)
 
-            if family != .systemSmall, let source = entry.fact.source {
+            if family != .systemSmall {
                 Spacer(minLength: 0)
-                Text("— \(source)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                Text("widget.rescue.action").font(.caption2.weight(.semibold)).foregroundStyle(Color(red: 0.05, green: 0.35, blue: 0.26))
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .environment(\.locale, languageCode == "system" ? .autoupdatingCurrent : Locale(identifier: languageCode))
+        .widgetURL(URL(string: "breathe://rescue"))
     }
+
+    private var programNameKey: LocalizedStringKey { LocalizedStringKey("program.\(programID).name") }
+    private var programSymbol: String { switch programID { case "digital": "iphone.slash"; case "spending": "cart.badge.clock"; case "alcohol": "drop.fill"; case "gambling": "shield.lefthalf.filled"; default: "leaf.fill" } }
 }
 
 private struct WidgetLayoutMetrics {
@@ -104,7 +110,7 @@ struct BreatheWidget: Widget {
                 .containerBackground(Color(red: 0.96, green: 0.97, blue: 0.95), for: .widget)
         }
         .configurationDisplayName("Daily Motivation")
-        .description("A daily reminder of how your body recovers while you stay smoke-free.")
+        .description("widget.description")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
