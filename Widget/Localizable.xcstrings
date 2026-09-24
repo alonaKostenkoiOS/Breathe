@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -214,6 +215,7 @@
       }
     },
     "%@/5" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -284,6 +286,7 @@
       }
     },
     "%@/150" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -491,237 +494,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@s"
-          }
-        }
-      }
-    },
-    "10 min" : {
-      "comment" : "Short waiting-period option.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 min"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 хв"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 minutos"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 minutos"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 Min."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 minutes"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 minuti"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 minut"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 dk."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10分"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10분"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 分钟"
-          }
-        }
-      }
-    },
-    "24 hours" : {
-      "comment" : "Waiting-period option.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 hours"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 години"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 horas"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 horas"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 Stunden"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 ore"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 godziny"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 saat"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24時間"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24시간"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 小时"
-          }
-        }
-      }
-    },
-    "72 hours" : {
-      "comment" : "Waiting-period option.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 hours"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 години"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 horas"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 horas"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 Stunden"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 ore"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 godziny"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 saat"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72時間"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72시간"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "72 小时"
           }
         }
       }
@@ -3451,6 +3223,7 @@
     },
     "brand.regain_control" : {
       "comment" : "Umbrella brand message.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3599,6 +3372,7 @@
       }
     },
     "Breathe automatically supports Light and Dark Mode." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4741,6 +4515,7 @@
       }
     },
     "Celebrate important recovery moments. You can change this anytime." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4956,6 +4731,7 @@
     },
     "Changing the language does not change your currency, quit date, or saved progress." : {
       "comment" : "Language setting privacy and data reassurance.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6169,6 +5945,7 @@
     },
     "Craving Coach" : {
       "comment" : "Name of the personalized, in-the-moment craving support flow.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6666,6 +6443,7 @@
       }
     },
     "Day %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6950,6 +6728,7 @@
     },
     "digital.screen_time.fallback" : {
       "comment" : "Graceful fallback when FamilyControls entitlement is unavailable.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7382,6 +7161,7 @@
       }
     },
     "Every day without smoking gives your body more room to heal." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7452,6 +7232,7 @@
       }
     },
     "Every smoke-free moment is meaningful." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7737,6 +7518,7 @@
       }
     },
     "Follow System" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8178,6 +7960,7 @@
     },
     "gambling.safety.resources_free" : {
       "comment" : "Free safety resource statement.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8851,6 +8634,7 @@
     },
     "Get support that fits this moment" : {
       "comment" : "Dashboard subtitle for Craving Coach.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10331,6 +10115,7 @@
       }
     },
     "How are you feeling now?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -12929,6 +12714,7 @@
       }
     },
     "Logging this moment helps Breathe understand what support works for you." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -13857,6 +13643,7 @@
       }
     },
     "Moving toward %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -14497,6 +14284,7 @@
       }
     },
     "Note (optional)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -15009,6 +14797,7 @@
     },
     "notifications.discreet.detail" : {
       "comment" : "Discreet notification explanation.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -15163,6 +14952,7 @@
       }
     },
     "of %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -15233,6 +15023,7 @@
       }
     },
     "of cravings passed without smoking" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -15519,6 +15310,7 @@
     },
     "Open Craving Coach" : {
       "comment" : "Dashboard action opening personalized craving support.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -16466,6 +16258,7 @@
     },
     "plan.if_then.privacy" : {
       "comment" : "Plan privacy note.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -16777,6 +16570,7 @@
     },
     "platform.migration.detail" : {
       "comment" : "Legacy nicotine migration reassurance.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -16931,6 +16725,7 @@
       }
     },
     "Preparing your progress…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -17001,6 +16796,7 @@
       }
     },
     "Price per pack" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -17846,6 +17642,7 @@
     },
     "program.delete.detail" : {
       "comment" : "Program deletion consequence.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -18625,6 +18422,7 @@
     },
     "program.primary" : {
       "comment" : "Current primary program badge.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -21093,6 +20891,7 @@
     },
     "rescue.helpful.question" : {
       "comment" : "Rescue usefulness feedback.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -21950,6 +21749,7 @@
     },
     "rescue.start" : {
       "comment" : "Immediate support action.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -22027,6 +21827,7 @@
     },
     "rescue.start.detail" : {
       "comment" : "Rescue action detail.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -22182,6 +21983,7 @@
     },
     "rescue.title" : {
       "comment" : "Shared Rescue flow title.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -22552,6 +22354,7 @@
     },
     "risk_window.manual.detail" : {
       "comment" : "Risk window persistence explanation.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29133,6 +28936,7 @@
     },
     "System Default" : {
       "comment" : "Use the language selected for Breathe by iOS.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29346,6 +29150,7 @@
       }
     },
     "Target" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29630,6 +29435,7 @@
       }
     },
     "Theme" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29700,6 +29506,7 @@
       }
     },
     "These values only affect your progress estimates." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -30127,6 +29934,7 @@
       }
     },
     "This resets your quit plan. Your logged cravings are kept." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31211,6 +31019,7 @@
       }
     },
     "Version" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32063,6 +31872,7 @@
       }
     },
     "Whatever the answer, taking this pause mattered." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32872,7 +32682,6 @@
     },
     "widget.rescue.action" : {
       "comment" : "Widget quick action.",
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33377,6 +33186,7 @@
       }
     },
     "You can add routine times later." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33589,6 +33399,7 @@
       }
     },
     "Your body is recovering" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33801,6 +33612,7 @@
       }
     },
     "Your first three days may feel more challenging. We’ll support you around the moments you selected." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -34013,6 +33825,7 @@
       }
     },
     "Your plan has been updated." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
