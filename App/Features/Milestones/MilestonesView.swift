@@ -3,6 +3,7 @@ import BreatheCore
 
 struct MilestonesView: View {
     @Environment(AppEnvironment.self) private var environment
+    @Environment(\.locale) private var locale
     private var plan: QuitPlan? { environment.planStore.plan }
     private var statuses: [MilestoneStatus] {
         guard let plan else { return [] }
@@ -60,7 +61,7 @@ struct MilestonesView: View {
                         let active = plan.map { date >= Calendar.current.startOfDay(for: $0.quitDate) } ?? false
                         Circle().fill(active ? Color.breatheAccent : .breatheDivider).frame(width: daySize, height: daySize)
                             .overlay(active ? Image(systemName: "checkmark").font(.system(size: 9, weight: .bold)).foregroundStyle(.white) : nil)
-                            .accessibilityLabel(date.formatted(date: .abbreviated, time: .omitted))
+                            .accessibilityLabel(date.formatted(.dateTime.year().month(.abbreviated).day().locale(locale)))
                             .accessibilityValue(active ? "Smoke-free" : "Before quit date")
                     }
                 }
@@ -80,8 +81,8 @@ struct MilestonesView: View {
                         }
                     }
                     VStack(alignment: .leading, spacing: metrics.compactSpacing) {
-                        Text(status.milestone.title).font(.headline).foregroundStyle(status.isAchieved ? Color.breatheText : .breatheTextSecondary)
-                        Text(status.milestone.detail).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+                        Text(LocalizedStringKey(status.milestone.title)).font(.headline).foregroundStyle(status.isAchieved ? Color.breatheText : .breatheTextSecondary)
+                        Text(LocalizedStringKey(status.milestone.detail)).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
                         if !status.isAchieved { BreatheProgressBar(value: status.fraction) }
                     }.padding(.top, metrics.compactSpacing)
                     Spacer()
@@ -93,3 +94,9 @@ struct MilestonesView: View {
 }
 
 #Preview { MilestonesView().environment(AppEnvironment.preview()) }
+
+#Preview("French Dark") {
+    MilestonesView().environment(AppEnvironment.preview())
+        .environment(\.locale, Locale(identifier: "fr"))
+        .preferredColorScheme(.dark)
+}

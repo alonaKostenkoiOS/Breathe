@@ -11,37 +11,31 @@ public struct ProgressFormatter: Sendable {
 
     /// e.g. "$124.50" for the plan's currency.
     public func money(_ amount: Decimal, currencyCode: String) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currencyCode
-        formatter.locale = locale
-        return formatter.string(from: amount as NSDecimalNumber)
-            ?? "\(amount) \(currencyCode)"
+        amount.formatted(.currency(code: currencyCode).locale(locale))
     }
 
     /// A compact smoke-free duration, e.g. "12d 4h" or "3h 20m".
     public func duration(_ interval: TimeInterval) -> String {
-        let total = Int(interval)
-        let days = total / 86_400
-        let hours = (total % 86_400) / 3_600
-        let minutes = (total % 3_600) / 60
-
-        if days > 0 { return "\(days)d \(hours)h" }
-        if hours > 0 { return "\(hours)h \(minutes)m" }
-        return "\(minutes)m"
+        durationFormatter.string(from: max(interval, 0)) ?? 0.formatted(.number.locale(locale))
     }
 
     /// Life regained rendered in the largest sensible unit.
     public func lifeRegained(_ interval: TimeInterval) -> String {
-        let minutes = Int(interval / 60)
-        if minutes >= 1_440 {
-            let days = minutes / 1_440
-            let hours = (minutes % 1_440) / 60
-            return "\(days)d \(hours)h"
-        }
-        if minutes >= 60 {
-            return "\(minutes / 60)h \(minutes % 60)m"
-        }
-        return "\(minutes)m"
+        duration(interval)
+    }
+
+    public func percentage(_ fraction: Double) -> String {
+        fraction.formatted(.percent.precision(.fractionLength(0)).locale(locale))
+    }
+
+    private var durationFormatter: DateComponentsFormatter {
+        let formatter = DateComponentsFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.calendar?.locale = locale
+        formatter.allowedUnits = [.day, .hour, .minute]
+        formatter.unitsStyle = .abbreviated
+        formatter.maximumUnitCount = 2
+        formatter.zeroFormattingBehavior = [.dropLeading, .dropTrailing]
+        return formatter
     }
 }

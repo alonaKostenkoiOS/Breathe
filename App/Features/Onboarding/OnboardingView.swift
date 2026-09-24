@@ -245,10 +245,10 @@ struct OnboardingView: View {
             }
             title("Your smoke-free plan is ready")
             summaryRow("Estimated cigarettes avoided per day", "\(profile.cigarettesPerDay)")
-            summaryRow("Estimated weekly savings", weekly.formatted(.currency(code: profile.currencyCode)))
-            if let next { summaryRow("First upcoming health milestone", String(localized: String.LocalizationValue(next.milestone.title))) }
+            summaryRow("Estimated weekly savings", weekly.formatted(.currency(code: profile.currencyCode).locale(locale)))
+            if let next { summaryRow("First upcoming health milestone", String(localized: String.LocalizationValue(next.milestone.title), locale: locale)) }
             if !profile.triggers.isEmpty {
-                summaryRow("Selected high-risk situations", profile.triggers.map { String(localized: String.LocalizationValue(triggerKey($0))) }.sorted().joined(separator: ", "))
+                summaryRow("Selected high-risk situations", profile.triggers.map { String(localized: String.LocalizationValue(triggerKey($0)), locale: locale) }.sorted().joined(separator: ", "))
             }
             if let reason = profile.personalReason { summaryRow("Your reason", reason) }
             if environment.dateProvider.now().timeIntervalSince(profile.quitDate) < 3 * 86_400 {
@@ -456,4 +456,10 @@ private struct RoutineEventCardStyle: ViewModifier {
     OnboardingView().environment(AppEnvironment.preview())
         .environment(\.dynamicTypeSize, .accessibility3)
         .previewDevice(PreviewDevice(rawValue: "iPhone 17 Pro"))
+}
+
+#Preview("Portuguese Compact") {
+    OnboardingView().environment(AppEnvironment.preview())
+        .environment(\.locale, Locale(identifier: "pt-BR"))
+        .frame(width: 375, height: 700)
 }

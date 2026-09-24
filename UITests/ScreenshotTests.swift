@@ -48,8 +48,8 @@ final class ScreenshotTests: XCTestCase {
 
         app.buttons["Close"].tap()
         app.tabBars.buttons["Home"].tap()
-        app.buttons["I’m having a craving"].tap()
-        XCTAssertTrue(app.staticTexts["Craving Rescue"].waitForExistence(timeout: 5))
+        app.buttons["Open Craving Coach"].tap()
+        XCTAssertTrue(app.staticTexts["Craving Coach"].waitForExistence(timeout: 5))
         capture("06-craving-rescue")
     }
 
@@ -66,5 +66,23 @@ final class ScreenshotTests: XCTestCase {
 
         XCTAssertTrue(app.navigationBars["Головна"].waitForExistence(timeout: 10))
         capture("07-ukrainian")
+    }
+
+    func testEverySupportedLanguageLaunchesLocalized() {
+        let languages = [
+            ("en", "en_US", "Home"), ("uk", "uk_UA", "Головна"),
+            ("es", "es_ES", "Inicio"), ("pt-BR", "pt_BR", "Início"),
+            ("de", "de_DE", "Start"), ("fr", "fr_FR", "Accueil"),
+            ("it", "it_IT", "Home"), ("pl", "pl_PL", "Strona główna"),
+            ("tr", "tr_TR", "Ana Sayfa"), ("ja", "ja_JP", "ホーム"),
+            ("ko", "ko_KR", "홈"), ("zh-Hans", "zh_CN", "首页")
+        ]
+
+        for (language, locale, homeTitle) in languages {
+            let app = makeApp(extraArguments: ["-AppleLanguages", "(\(language))", "-AppleLocale", locale])
+            app.launch()
+            XCTAssertTrue(app.navigationBars[homeTitle].waitForExistence(timeout: 8), "Missing localized Home for \(language)")
+            app.terminate()
+        }
     }
 }
