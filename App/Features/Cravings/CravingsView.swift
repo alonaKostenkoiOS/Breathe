@@ -4,9 +4,12 @@ import BreatheCore
 
 struct CravingsView: View {
     @Environment(AppEnvironment.self) private var environment
+    @Environment(\.locale) private var locale
     @State private var model: CravingsViewModel?
     @State private var isLogging = false
     @State private var showRescue = false
+    @State private var coachIntensity: Int?
+    @State private var coachTrigger: Craving.Trigger?
 
     var body: some View {
         NavigationStack {
@@ -24,10 +27,14 @@ struct CravingsView: View {
         .sheet(isPresented: $isLogging) {
             LogCravingView { intensity, trigger, resisted, note in
                 await model?.log(intensity: intensity, trigger: trigger, didResist: resisted, note: note)
-            } onRescue: { showRescue = true }
+            } onRescue: { intensity, trigger in
+                coachIntensity = intensity; coachTrigger = trigger; showRescue = true
+            }
         }
         .fullScreenCover(isPresented: $showRescue) {
-            CravingRescueView(personalReason: environment.planStore.profile?.personalReason)
+            CravingRescueView(personalReason: environment.planStore.profile?.personalReason,
+                              entryPoint: .cravingLog, initialIntensity: coachIntensity,
+                              initialTrigger: coachTrigger, onCompleted: { await model?.load() })
         }
     }
 
@@ -62,7 +69,8 @@ struct CravingsView: View {
                     VStack(alignment: .leading, spacing: metrics.compactSpacing) { insightRate(model, metrics) }
                 }
                 if let top = model.insights.topTrigger {
-                    Label("Your most common recent trigger was \(top.label.lowercased()).", systemImage: top.symbol)
+                    let triggerName = String(localized: String.LocalizationValue(top.label), locale: locale)
+                    Label("Your most common recent trigger was \(triggerName.lowercased(with: locale)).", systemImage: top.symbol)
                         .font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -71,7 +79,7 @@ struct CravingsView: View {
     }
 
     @ViewBuilder private func insightRate(_ model: CravingsViewModel, _ metrics: AppLayoutMetrics) -> some View {
-        Text("\(Int(model.insights.resistanceRate * 100))%").font(AppTypography.metric(for: metrics.mode)).monospacedDigit()
+        Text(ProgressFormatter(locale: locale).percentage(model.insights.resistanceRate)).font(AppTypography.metric(for: metrics.mode)).monospacedDigit()
         Text("of cravings passed without smoking").font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
     }
 

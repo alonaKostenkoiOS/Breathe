@@ -259,9 +259,11 @@ struct BreatheChip: View {
 
 struct BreatheProgressBar: View {
     let value: Double
+    @Environment(\.locale) private var locale
     var body: some View {
         ProgressView(value: min(max(value, 0), 1)).tint(Color.breatheAccent)
-            .scaleEffect(x: 1, y: 1.5).accessibilityValue(Text("\(Int(value * 100)) percent"))
+            .scaleEffect(x: 1, y: 1.5)
+            .accessibilityValue(Text(value.formatted(.percent.precision(.fractionLength(0)).locale(locale))))
     }
 }
 
@@ -311,6 +313,7 @@ struct BreatheBanner: View {
             }
         }.padding(metrics.cardPadding).frame(maxWidth: .infinity, alignment: .leading)
             .background(tint, in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+            .accessibilityElement(children: .combine)
     }
 }
 

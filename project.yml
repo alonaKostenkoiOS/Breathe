@@ -5,7 +5,7 @@ options:
     iOS: "17.0"
   createIntermediateGroups: true
   developmentLanguage: en
-  knownRegions: [en, uk]
+  knownRegions: [en, uk, es, pt-BR, de, fr, it, pl, tr, ja, ko, zh-Hans]
 
 packages:
   BreatheCore:
@@ -37,10 +37,10 @@ targets:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        # App Group sharing (for a personalised stats widget) needs a paid
-        # Apple Developer account. Left off so the app builds on a free
-        # account / device. See README to enable it.
-        # CODE_SIGN_ENTITLEMENTS: App/Resources/Breathe.entitlements
+        # Shared language preference keeps widgets and scheduled content in
+        # the same selected language. The production signing profile must
+        # include group.com.breathe.app.
+        CODE_SIGN_ENTITLEMENTS: App/Resources/Breathe.entitlements
 
   BreatheWidgetExtension:
     type: app-extension
@@ -52,7 +52,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.breathe.app.widget
-        # CODE_SIGN_ENTITLEMENTS: Widget/BreatheWidget.entitlements
+        CODE_SIGN_ENTITLEMENTS: Widget/BreatheWidget.entitlements
         INFOPLIST_KEY_CFBundleDisplayName: Breathe
     info:
       path: Widget/Info.plist

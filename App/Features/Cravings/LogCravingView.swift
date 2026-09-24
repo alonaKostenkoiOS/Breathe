@@ -4,7 +4,7 @@ import BreatheCore
 struct LogCravingView: View {
     enum Outcome: String, CaseIterable { case resisted, smoked, ongoing }
     let onSave: (Int, Craving.Trigger, Bool, String?) async -> Void
-    var onRescue: (() -> Void)?
+    var onRescue: ((Int, Craving.Trigger) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @State private var intensity = 3
     @State private var trigger: Craving.Trigger = .stress
@@ -96,7 +96,7 @@ struct LogCravingView: View {
                 .font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             BreathePrimaryButton(title: "Done") { dismiss() }
             if outcome != .resisted, let onRescue {
-                BreatheSecondaryButton(title: "Try Craving Rescue", icon: "wind") { dismiss(); onRescue() }
+                BreatheSecondaryButton(title: "Try Craving Coach", icon: "sparkles") { dismiss(); onRescue(intensity, trigger) }
             }
         }
     }
@@ -106,7 +106,7 @@ struct LogCravingView: View {
     }
 
     private func save() {
-        if outcome == .ongoing { dismiss(); onRescue?(); return }
+        if outcome == .ongoing { dismiss(); onRescue?(intensity, trigger); return }
         saving = true
         Task {
             await onSave(intensity, trigger, outcome == .resisted, note)
@@ -130,3 +130,9 @@ extension Craving.Trigger {
 }
 
 #Preview { LogCravingView { _, _, _, _ in } }
+
+#Preview("Polish Accessibility") {
+    LogCravingView { _, _, _, _ in }
+        .environment(\.locale, Locale(identifier: "pl"))
+        .environment(\.dynamicTypeSize, .accessibility3)
+}
