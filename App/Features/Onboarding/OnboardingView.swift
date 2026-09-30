@@ -63,15 +63,10 @@ struct OnboardingView: View {
     private func welcome(_ metrics: AppLayoutMetrics) -> some View {
         VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
             if metrics.heroImageHeight > 0 {
-                Image("OnboardingHero")
-                    .resizable().scaledToFill().frame(maxWidth: .infinity).frame(height: metrics.heroImageHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
-                    .overlay(alignment: .topLeading) {
-                        Label("Breathe", systemImage: "leaf.fill").font(.headline).foregroundStyle(Color.breatheAccent)
-                            .padding(.horizontal, metrics.internalSpacing).frame(minHeight: 44)
-                            .background(.ultraThinMaterial, in: Capsule()).padding(metrics.internalSpacing)
-                    }
-                    .accessibilityLabel("A peaceful path through green hills toward sunrise")
+                BreatheFreedomHero(
+                    height: metrics.heroImageHeight,
+                    accessibilityLabel: "onboarding.platform.hero.accessibility"
+                )
             }
             title("Quit smoking with a plan that adapts to you",
                   "Breathe tracks your progress, learns your difficult moments, and helps you get through cravings before they turn into slips.")

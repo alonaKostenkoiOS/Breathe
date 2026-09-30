@@ -87,6 +87,7 @@ extension Color {
 
 struct BreatheScreen<Content: View>: View {
     var scrollable = true
+    var edgeToEdge = false
     @ViewBuilder let content: (AppLayoutMetrics) -> Content
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -100,14 +101,14 @@ struct BreatheScreen<Content: View>: View {
                     ScrollView {
                         content(metrics).environment(\.appLayoutMetrics, metrics)
                             .frame(maxWidth: metrics.maxContentWidth, alignment: .leading)
-                            .padding(.horizontal, metrics.screenPadding)
-                            .padding(.vertical, metrics.cardPadding)
+                            .padding(.horizontal, edgeToEdge ? 0 : metrics.screenPadding)
+                            .padding(.vertical, edgeToEdge ? 0 : metrics.cardPadding)
                             .frame(maxWidth: .infinity)
                     }.scrollDismissesKeyboard(.interactively)
                 } else {
                     content(metrics).environment(\.appLayoutMetrics, metrics)
                         .frame(maxWidth: metrics.maxContentWidth, maxHeight: .infinity)
-                        .padding(.horizontal, metrics.screenPadding)
+                        .padding(.horizontal, edgeToEdge ? 0 : metrics.screenPadding)
                 }
             }
             .foregroundStyle(Color.breatheText)
@@ -185,7 +186,7 @@ struct BreatheCard<Content: View>: View {
         content().frame(maxWidth: .infinity, alignment: .leading).padding(metrics.cardPadding)
             .background(tint, in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous).stroke(Color.breatheDivider, lineWidth: 1))
-            .shadow(color: elevated ? .black.opacity(0.05) : .clear, radius: 12, y: 4)
+            .shadow(color: elevated ? Color.breatheAccent.opacity(0.09) : .clear, radius: 14, y: 5)
     }
 }
 
@@ -264,6 +265,68 @@ struct BreatheProgressBar: View {
         ProgressView(value: min(max(value, 0), 1)).tint(Color.breatheAccent)
             .scaleEffect(x: 1, y: 1.5)
             .accessibilityValue(Text(value.formatted(.percent.precision(.fractionLength(0)).locale(locale))))
+    }
+}
+
+/// Shared animated hero that continues the calm breathing rhythm from launch.
+/// Decorative motion is disabled automatically when Reduce Motion is enabled.
+struct BreatheFreedomHero: View {
+    let height: CGFloat
+    let accessibilityLabel: LocalizedStringKey
+    @Environment(\.appLayoutMetrics) private var metrics
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isBreathing = false
+
+    var body: some View {
+        ZStack {
+            Image("OnboardingHero")
+                .resizable()
+                .scaledToFill()
+                .scaleEffect(isBreathing ? 1.035 : 1)
+
+            LinearGradient(
+                colors: [.clear, Color.breatheAccent.opacity(isBreathing ? 0.05 : 0.12)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            Circle()
+                .stroke(Color.white.opacity(0.42), lineWidth: 1.5)
+                .frame(width: 88, height: 88)
+                .scaleEffect(isBreathing ? 1.24 : 0.82)
+                .opacity(isBreathing ? 0.08 : 0.42)
+                .offset(x: 74, y: 34)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: height)
+        .clipShape(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+        .overlay(alignment: .topLeading) {
+            HStack(spacing: metrics.compactSpacing) {
+                Image(systemName: "lungs.fill")
+                    .symbolRenderingMode(.hierarchical)
+                    .scaleEffect(isBreathing ? 1.08 : 0.94)
+                Text("Breathe")
+            }
+            .font(.headline)
+            .foregroundStyle(Color.breatheAccent)
+            .padding(.horizontal, metrics.internalSpacing)
+            .frame(minHeight: 44)
+            .background(.ultraThinMaterial, in: Capsule())
+            .padding(metrics.internalSpacing)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous)
+                .stroke(Color.white.opacity(0.5), lineWidth: 1)
+        }
+        .shadow(color: Color.breatheAccent.opacity(0.10), radius: 18, y: 8)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+        .onAppear {
+            guard !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 2.8).repeatForever(autoreverses: true)) {
+                isBreathing = true
+            }
+        }
     }
 }
 
