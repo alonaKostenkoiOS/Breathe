@@ -4,6 +4,7 @@ import BreatheCore
 struct OnboardingView: View {
     @Environment(AppEnvironment.self) private var environment
     @Environment(\.locale) private var locale
+    @AppStorage("platform_onboarding_completed") private var platformOnboardingCompleted = false
     @State private var draft: OnboardingDraft?
     @State private var direction = 1
     @State private var priceText = ""
@@ -266,7 +267,8 @@ struct OnboardingView: View {
         else {
             let profile = QuitProfile(quitDate: environment.dateProvider.now(), cigarettesPerDay: 15,
                                       packPrice: 12, currencyCode: CurrencyResolver.currencyCode(for: locale))
-            draft = OnboardingDraft(profile: profile)
+            draft = OnboardingDraft(step: platformOnboardingCompleted ? OnboardingStep.status.rawValue : OnboardingStep.welcome.rawValue,
+                                    profile: profile)
         }
         priceText = NSDecimalNumber(decimal: draft?.profile.packPrice ?? 12).stringValue
         if let goal = draft?.profile.savingsGoal {

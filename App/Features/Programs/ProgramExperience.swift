@@ -1,4 +1,5 @@
 import SwiftUI
+import Charts
 import BreatheCore
 
 extension RecoveryProgramID {
@@ -9,29 +10,321 @@ extension RecoveryProgramID {
 
 struct ProgramSelectionView: View {
     @Environment(AppEnvironment.self) private var environment
-    @State private var selection: RecoveryProgramID?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("platform_onboarding_story_step_v2") private var storedStep = 0
+    @AppStorage("platform_onboarding_program") private var storedProgram = ""
+    @AppStorage("platform_onboarding_completed") private var platformOnboardingCompleted = false
+    @AppStorage("platform_onboarding_frequency") private var frequency = 0
+    @AppStorage("platform_onboarding_intensity") private var intensity = 3
+    @AppStorage("platform_onboarding_period") private var difficultPeriod = -1
+    @State private var direction = 1
+
+    private enum Step: Int, CaseIterable { case welcome, impact, scale, support, selection, checkIn, snapshot }
+    private var step: Step { Step(rawValue: min(max(storedStep, 0), Step.allCases.count - 1)) ?? .welcome }
+    private var selection: RecoveryProgramID? { RecoveryProgramID(rawValue: storedProgram) }
+    private var progress: Double { Double(step.rawValue + 1) / Double(Step.allCases.count) }
 
     var body: some View {
         NavigationStack {
             BreatheScreen { metrics in
                 VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
-                    BreatheSectionHeader(title: "program.selection.title", detail: "program.selection.detail")
-                    ForEach(RecoveryProgramID.allCases) { id in
-                        let definition = id.definition
-                        BreatheSelectionCard(title: id.nameKey, detail: id.descriptionKey,
-                                             icon: definition.iconName, selected: selection == id) {
-                            selection = id; BreatheFeedback.selection()
-                        }
+                    if step != .welcome { BreatheProgressBar(value: progress) }
+                    content(metrics)
+                        .id(step)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: direction > 0 ? .trailing : .leading).combined(with: .opacity),
+                            removal: .opacity
+                        ))
+                }
+                .padding(.bottom, metrics.majorSpacing)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: step)
+            }
+            .toolbar {
+                if step != .welcome {
+                    ToolbarItem(placement: .topBarLeading) {
+                        BreatheIconButton(icon: "chevron.left", label: "Back", action: back)
                     }
-                    BreatheBanner(icon: "lock.shield.fill", title: "privacy.local.title",
-                                  message: "privacy.local.detail", tint: .breatheSky)
-                    BreathePrimaryButton(title: "program.selection.continue", disabled: selection == nil) {
-                        if let selection { _ = environment.recoveryStore.start(selection) }
-                    }
-                }.padding(.bottom, metrics.majorSpacing)
-            }.navigationTitle("Breathe")
+                }
+            }
         }
     }
+
+    @ViewBuilder private func content(_ metrics: AppLayoutMetrics) -> some View {
+        switch step {
+        case .welcome: welcome(metrics)
+        case .impact: impact(metrics)
+        case .scale: scale(metrics)
+        case .support: support(metrics)
+        case .selection: programSelection
+        case .checkIn: checkIn(metrics)
+        case .snapshot: snapshot(metrics)
+        }
+    }
+
+    private func welcome(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            if metrics.heroImageHeight > 0 {
+                Image("OnboardingHero")
+                    .resizable().scaledToFill()
+                    .frame(maxWidth: .infinity).frame(height: metrics.heroImageHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+                    .overlay(alignment: .topLeading) {
+                        Label("Breathe", systemImage: "leaf.fill")
+                            .font(.headline).foregroundStyle(Color.breatheAccent)
+                            .padding(.horizontal, metrics.internalSpacing).frame(minHeight: 44)
+                            .background(.ultraThinMaterial, in: Capsule()).padding(metrics.internalSpacing)
+                    }
+                    .accessibilityLabel("onboarding.platform.hero.accessibility")
+            }
+            platformTitle("onboarding.story.purpose.title", "onboarding.story.purpose.detail", metrics)
+            BreathePrimaryButton(title: "onboarding.story.continue", action: advance)
+            Label("Your data stays on your device.", systemImage: "lock.fill")
+                .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+        }
+    }
+
+    private func impact(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            platformTitle("onboarding.story.impact.title", "onboarding.story.impact.detail", metrics)
+            LazyVGrid(columns: metrics.metricColumns, spacing: metrics.internalSpacing) {
+                impactCard("heart.text.square.fill", "onboarding.story.impact.health", .breathePeach, metrics)
+                impactCard("brain.head.profile", "onboarding.story.impact.attention", .breatheSky, metrics)
+                impactCard("person.2.fill", "onboarding.story.impact.relationships", .breatheAccentSoft, metrics)
+                impactCard("banknote.fill", "onboarding.story.impact.money", .breatheYellow, metrics)
+            }
+            Text("onboarding.story.impact.qualifier").font(AppTypography.caption(for: metrics.mode))
+                .foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+            BreathePrimaryButton(title: "onboarding.story.continue", action: advance)
+        }
+    }
+
+    private func scale(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .center, spacing: metrics.sectionSpacing) {
+            VStack(spacing: metrics.compactSpacing) {
+                Text("onboarding.story.scale.title")
+                    .font(AppTypography.screenTitle(for: metrics.mode))
+                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+                Text("onboarding.story.scale.detail")
+                    .font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            }.frame(maxWidth: .infinity)
+            statistic("750M+", "onboarding.story.scale.tobacco", .breatheAccentSoft, metrics)
+            statistic("400M", "onboarding.story.scale.alcohol", .breatheSky, metrics)
+            statistic("×6", "onboarding.story.scale.gambling", .breatheYellow, metrics)
+            Text("onboarding.story.scale.source").font(AppTypography.caption(for: metrics.mode))
+                .foregroundStyle(Color.breatheTextSecondary).multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+            BreathePrimaryButton(title: "onboarding.story.continue", action: advance)
+        }
+    }
+
+    private func support(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .center, spacing: metrics.sectionSpacing) {
+            Image(systemName: "wind")
+                .font(.system(size: metrics.mode == .compact ? 30 : 36, weight: .semibold))
+                .foregroundStyle(Color.breatheAccent)
+                .frame(width: 72, height: 72)
+                .background(Color.breatheAccentSoft, in: Circle())
+                .accessibilityHidden(true)
+            VStack(spacing: metrics.compactSpacing) {
+                Text("onboarding.story.rescue.title")
+                    .font(AppTypography.screenTitle(for: metrics.mode)).multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
+                Text("onboarding.story.rescue.detail")
+                    .font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            }
+            BreatheCard(tint: .breatheSurfaceSoft, elevated: true) {
+                VStack(spacing: metrics.internalSpacing) {
+                    rescueJourneyRow("bolt.heart.fill", "onboarding.story.rescue.urge", false, metrics)
+                    Image(systemName: "arrow.down").foregroundStyle(Color.breatheAccentMedium).accessibilityHidden(true)
+                    rescueJourneyRow("pause.fill", "onboarding.story.rescue.pause", true, metrics)
+                    Image(systemName: "arrow.down").foregroundStyle(Color.breatheAccentMedium).accessibilityHidden(true)
+                    rescueJourneyRow("arrow.forward.circle.fill", "onboarding.story.rescue.next", false, metrics)
+                }
+            }
+            HStack(spacing: metrics.internalSpacing) {
+                Label("onboarding.story.rescue.offline", systemImage: "wifi.slash")
+                Label("onboarding.story.rescue.private", systemImage: "lock.fill")
+            }
+            .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+            .frame(maxWidth: .infinity)
+            BreathePrimaryButton(title: "onboarding.story.rescue.action", action: advance)
+            Text("onboarding.story.rescue.disclaimer").font(.caption2)
+                .foregroundStyle(Color.breatheTextTertiary).multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var programSelection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            BreatheSectionHeader(title: "program.selection.title", detail: "program.selection.detail")
+            ForEach(RecoveryProgramID.allCases) { id in
+                let definition = id.definition
+                BreatheSelectionCard(title: id.nameKey, detail: id.descriptionKey,
+                                     icon: definition.iconName, selected: selection == id) {
+                    storedProgram = id.rawValue
+                    BreatheFeedback.selection()
+                }
+            }
+            BreathePrimaryButton(title: "program.selection.continue", disabled: selection == nil, action: advance)
+        }
+    }
+
+    private func checkIn(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            platformTitle("onboarding.checkin.title", "onboarding.checkin.detail", metrics)
+            question("onboarding.checkin.frequency") {
+                HStack(spacing: metrics.compactSpacing) {
+                    ForEach(1...4, id: \.self) { value in
+                        answerChip(frequencyKey(value), selected: frequency == value) { frequency = value }
+                    }
+                }
+            }
+            question("onboarding.checkin.intensity") {
+                HStack(spacing: metrics.compactSpacing) {
+                    ForEach(1...5, id: \.self) { value in
+                        Button("\(value)") { intensity = value; BreatheFeedback.selection() }
+                            .font(.headline).frame(maxWidth: .infinity, minHeight: 48)
+                            .background(intensity == value ? Color.breatheAccentSoft : .breatheSurface,
+                                        in: RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous)
+                                .stroke(intensity == value ? Color.breatheAccent : .breatheDivider,
+                                        lineWidth: intensity == value ? 2 : 1))
+                            .foregroundStyle(Color.breatheText)
+                    }
+                }
+            }
+            question("onboarding.checkin.period") {
+                HStack(spacing: metrics.compactSpacing) {
+                    ForEach(0...3, id: \.self) { value in
+                        answerChip(periodKey(value), selected: difficultPeriod == value) { difficultPeriod = value }
+                    }
+                }
+            }
+            BreathePrimaryButton(title: "onboarding.checkin.show", disabled: frequency == 0 || difficultPeriod < 0, action: advance)
+        }
+    }
+
+    private func snapshot(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            platformTitle("onboarding.snapshot.title", "onboarding.snapshot.detail", metrics)
+            BreatheCard(tint: .breatheSurfaceSoft, elevated: true) {
+                VStack(alignment: .leading, spacing: metrics.internalSpacing) {
+                    Chart(snapshotPoints) { point in
+                        AreaMark(x: .value("Time", point.hour), y: .value("Intensity", point.value))
+                            .foregroundStyle(LinearGradient(colors: [.breatheAccentMedium.opacity(0.5), .breatheAccentSoft.opacity(0.08)],
+                                                            startPoint: .top, endPoint: .bottom))
+                            .interpolationMethod(.catmullRom)
+                        LineMark(x: .value("Time", point.hour), y: .value("Intensity", point.value))
+                            .foregroundStyle(Color.breatheAccent).lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+                            .interpolationMethod(.catmullRom)
+                    }
+                    .chartYScale(domain: 0...5.5).chartYAxis(.hidden)
+                    .chartXAxis {
+                        AxisMarks(values: [8, 14, 20]) { value in
+                            AxisValueLabel {
+                                if let hour = value.as(Int.self) { Text(axisKey(hour)).font(.caption) }
+                            }
+                        }
+                    }
+                    .frame(height: metrics.chartHeight)
+                    .accessibilityLabel("onboarding.snapshot.chart.accessibility")
+                    HStack(spacing: metrics.compactSpacing) {
+                        Image(systemName: "circle.fill").font(.caption2).foregroundStyle(Color.breatheAccent)
+                        Text(snapshotInsight).font(AppTypography.callout(for: metrics.mode))
+                            .foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+            Text("onboarding.snapshot.disclaimer")
+                .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            BreathePrimaryButton(title: "onboarding.snapshot.action", disabled: selection == nil) {
+                guard let selection else { return }
+                platformOnboardingCompleted = true
+                _ = environment.recoveryStore.start(selection)
+                storedStep = 0; storedProgram = ""; frequency = 0; intensity = 3; difficultPeriod = -1
+            }
+        }
+    }
+
+    private func platformTitle(_ title: LocalizedStringKey, _ detail: LocalizedStringKey,
+                               _ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.compactSpacing) {
+            Text(title).font(AppTypography.heroTitle(for: metrics.mode))
+                .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
+            Text(detail).font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private func question<Content: View>(_ title: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 10) { Text(title).font(.headline); content() }
+    }
+
+    private func impactCard(_ icon: String, _ title: LocalizedStringKey, _ tint: Color,
+                            _ metrics: AppLayoutMetrics) -> some View {
+        BreatheCard(tint: tint) {
+            VStack(alignment: .leading, spacing: metrics.compactSpacing) {
+                Image(systemName: icon).font(.title3).foregroundStyle(Color.breatheAccent)
+                Text(title).font(.headline).fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func statistic(_ value: String, _ detail: LocalizedStringKey, _ tint: Color,
+                           _ metrics: AppLayoutMetrics) -> some View {
+        BreatheCard(tint: tint) {
+            VStack(spacing: metrics.compactSpacing) {
+                Text(value).font(AppTypography.metric(for: metrics.mode)).monospacedDigit().foregroundStyle(Color.breatheAccent)
+                Text(detail).font(AppTypography.callout(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            }.frame(maxWidth: .infinity)
+        }
+    }
+
+    private func rescueJourneyRow(_ icon: String, _ title: LocalizedStringKey, _ highlighted: Bool,
+                                  _ metrics: AppLayoutMetrics) -> some View {
+        Label(title, systemImage: icon)
+            .font(highlighted ? .headline : AppTypography.body(for: metrics.mode))
+            .foregroundStyle(highlighted ? Color.breatheAccent : Color.breatheText)
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background(highlighted ? Color.breatheAccentSoft : .clear,
+                        in: RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous))
+            .accessibilityElement(children: .combine)
+    }
+
+    private func answerChip(_ title: LocalizedStringKey, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button { action(); BreatheFeedback.selection() } label: {
+            Text(title).font(.subheadline.weight(.medium)).multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, minHeight: 48).padding(.horizontal, 4)
+        }.buttonStyle(.plain)
+            .background(selected ? Color.breatheAccentSoft : .breatheSurface,
+                        in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(selected ? Color.breatheAccent : .breatheDivider, lineWidth: selected ? 2 : 1))
+    }
+
+    private struct SnapshotPoint: Identifiable { let hour: Int; let value: Double; var id: Int { hour } }
+    private var snapshotPoints: [SnapshotPoint] {
+        let peakHour = [9, 14, 20, 15][max(0, min(difficultPeriod, 3))]
+        let base = Double(frequency) * 0.35
+        return stride(from: 6, through: 24, by: 3).map { hour in
+            let distance = Double(abs(hour - peakHour))
+            let peak = Double(intensity) * exp(-(distance * distance) / 24)
+            return SnapshotPoint(hour: hour, value: min(5, max(0.25, base + peak)))
+        }
+    }
+    private var snapshotInsight: LocalizedStringKey { LocalizedStringKey("onboarding.snapshot.insight." + periodID) }
+    private var periodID: String { ["morning", "day", "evening", "varies"][max(0, min(difficultPeriod, 3))] }
+    private func frequencyKey(_ value: Int) -> LocalizedStringKey { LocalizedStringKey("onboarding.checkin.frequency." + ["", "rare", "weekly", "daily", "often"][value]) }
+    private func periodKey(_ value: Int) -> LocalizedStringKey { LocalizedStringKey("onboarding.checkin.period." + ["morning", "day", "evening", "varies"][value]) }
+    private func axisKey(_ hour: Int) -> LocalizedStringKey { hour == 8 ? "onboarding.chart.morning" : hour == 14 ? "onboarding.chart.day" : "onboarding.chart.evening" }
+
+    private func advance() { direction = 1; storedStep = min(step.rawValue + 1, Step.allCases.count - 1) }
+    private func back() { direction = -1; storedStep = max(step.rawValue - 1, 0) }
 }
 
 struct ProgramSafetyGate: View {
