@@ -33,6 +33,15 @@ private extension AnyTransition {
     }
 }
 
+private struct SupportJourneyPath: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: 23, y: 35))
+        path.addLine(to: CGPoint(x: 23, y: rect.height - 35))
+        return path
+    }
+}
+
 extension RecoveryProgramID {
     var definition: RecoveryProgramDefinition { RecoveryProgramCatalog.definition(self) }
     var nameKey: LocalizedStringKey { LocalizedStringKey(definition.nameKey) }
@@ -206,8 +215,13 @@ struct ProgramSelectionView: View {
     @AppStorage("platform_onboarding_period") private var difficultPeriod = -1
     @State private var direction = 1
     @State private var revealedSupportSteps = 0
+    @State private var intensitySliderValue = 3.0
 
-    private enum Step: Int, CaseIterable { case welcome, impact, scale, support, selection, checkIn, snapshot }
+    private enum Step: Int, CaseIterable {
+        case welcome, impact, scale, support, selection
+        case frequency, intensity, difficultPeriod
+        case snapshot
+    }
     private var step: Step { Step(rawValue: min(max(storedStep, 0), Step.allCases.count - 1)) ?? .welcome }
     private var selection: RecoveryProgramID? { RecoveryProgramID(rawValue: storedProgram) }
     private var progress: Double { Double(step.rawValue + 1) / Double(Step.allCases.count) }
@@ -222,7 +236,7 @@ struct ProgramSelectionView: View {
                     .transition(.asymmetric(insertion: .opacity, removal: .welcomeDissolveOut))
                     .zIndex(1)
                 } else {
-                    BreatheScreen { metrics in
+                    BreatheScreen(scrollable: false) { metrics in
                         VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
                             BreatheProgressBar(value: progress)
                             content(metrics)
@@ -232,7 +246,7 @@ struct ProgramSelectionView: View {
                                     removal: .opacity
                                 ))
                         }
-                        .padding(.bottom, metrics.majorSpacing)
+                        .padding(.vertical, metrics.cardPadding)
                         .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: step)
                     }
                     .transition(.asymmetric(insertion: .onboardingRiseIn, removal: .opacity))
@@ -260,7 +274,9 @@ struct ProgramSelectionView: View {
         case .scale: scale(metrics)
         case .support: support(metrics)
         case .selection: programSelection(metrics)
-        case .checkIn: checkIn(metrics)
+        case .frequency: frequencyQuestion(metrics)
+        case .intensity: intensityQuestion(metrics)
+        case .difficultPeriod: difficultPeriodQuestion(metrics)
         case .snapshot: snapshot(metrics)
         }
     }
@@ -338,47 +354,24 @@ struct ProgramSelectionView: View {
 
     private func support(_ metrics: AppLayoutMetrics) -> some View {
         VStack(alignment: .center, spacing: metrics.internalSpacing) {
-            ZStack {
-                Circle()
-                    .fill(Color.breatheSky.opacity(0.52))
-                    .frame(width: 92, height: 92)
-                Circle()
-                    .stroke(Color.breatheAccentMedium.opacity(0.25), lineWidth: 1)
-                    .frame(width: 72, height: 72)
-                Image(systemName: "wind")
-                    .font(.system(size: metrics.mode == .compact ? 28 : 32, weight: .medium))
-                    .foregroundStyle(Color.breatheAccent)
-            }
-            .accessibilityHidden(true)
-            .padding(.bottom, metrics.compactSpacing)
             VStack(spacing: metrics.compactSpacing) {
-                Text("onboarding.story.rescue.title")
+                Text("onboarding.story.rescue.short_title")
                     .font(AppTypography.screenTitle(for: metrics.mode)).multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
-                Text("onboarding.story.rescue.detail")
+                Text("onboarding.story.rescue.short_detail")
                     .font(AppTypography.body(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
                     .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             }
             .padding(.bottom, metrics.internalSpacing)
 
-            VStack(spacing: metrics.compactSpacing) {
-                stagedSupportRow(1, "bolt.heart.fill", "onboarding.story.rescue.urge", false, metrics)
-                supportConnector(visible: revealedSupportSteps >= 2)
-                stagedSupportRow(2, "pause.fill", "onboarding.story.rescue.pause", true, metrics)
-                supportConnector(visible: revealedSupportSteps >= 3)
-                stagedSupportRow(3, "arrow.forward", "onboarding.story.rescue.next", false, metrics)
-            }
-            .frame(maxWidth: .infinity)
+            supportJourney(metrics)
+            Spacer(minLength: metrics.internalSpacing)
             HStack(spacing: metrics.internalSpacing) {
                 Label("onboarding.story.rescue.offline", systemImage: "wifi.slash")
                 Label("onboarding.story.rescue.private", systemImage: "lock.fill")
             }
             .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
             .frame(maxWidth: .infinity)
-            Text("onboarding.story.rescue.disclaimer").font(.caption2)
-                .foregroundStyle(Color.breatheTextTertiary).multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-            Spacer(minLength: metrics.internalSpacing)
             BreathePrimaryButton(title: "onboarding.story.rescue.action", action: advance)
         }
         .frame(minHeight: onboardingPageHeight(metrics), alignment: .top)
@@ -387,8 +380,8 @@ struct ProgramSelectionView: View {
             guard !reduceMotion else { return }
             for stage in 1...3 {
                 guard !Task.isCancelled else { return }
-                try? await Task.sleep(for: .milliseconds(stage == 1 ? 180 : 320))
-                withAnimation(.smooth(duration: 0.48, extraBounce: 0.05)) {
+                try? await Task.sleep(for: .milliseconds(stage == 1 ? 800 : 650))
+                withAnimation(.smooth(duration: 0.58, extraBounce: 0.03)) {
                     revealedSupportSteps = stage
                 }
             }
@@ -412,77 +405,108 @@ struct ProgramSelectionView: View {
         .frame(minHeight: onboardingPageHeight(metrics), alignment: .top)
     }
 
-    private func checkIn(_ metrics: AppLayoutMetrics) -> some View {
+    private func frequencyQuestion(_ metrics: AppLayoutMetrics) -> some View {
         VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
-            platformTitle("onboarding.checkin.title", "onboarding.checkin.detail", metrics)
-            question("onboarding.checkin.frequency") {
-                HStack(spacing: metrics.compactSpacing) {
+            question("onboarding.checkin.frequency", metrics) {
+                VStack(spacing: metrics.internalSpacing) {
                     ForEach(1...4, id: \.self) { value in
-                        answerChip(frequencyKey(value), selected: frequency == value) { frequency = value }
-                    }
-                }
-            }
-            question("onboarding.checkin.intensity") {
-                HStack(spacing: metrics.compactSpacing) {
-                    ForEach(1...5, id: \.self) { value in
-                        Button("\(value)") { intensity = value; BreatheFeedback.selection() }
-                            .font(.headline).frame(maxWidth: .infinity, minHeight: 48)
-                            .background(intensity == value ? Color.breatheAccentSoft : .breatheSurface,
-                                        in: RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous))
-                            .overlay(RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous)
-                                .stroke(intensity == value ? Color.breatheAccent : .breatheDivider,
-                                        lineWidth: intensity == value ? 2 : 1))
-                            .foregroundStyle(Color.breatheText)
-                    }
-                }
-            }
-            question("onboarding.checkin.period") {
-                HStack(spacing: metrics.compactSpacing) {
-                    ForEach(0...3, id: \.self) { value in
-                        answerChip(periodKey(value), selected: difficultPeriod == value) { difficultPeriod = value }
+                        frequencyAnswer(value, selected: frequency == value, metrics) {
+                            frequency = value
+                        }
                     }
                 }
             }
             Spacer(minLength: metrics.internalSpacing)
-            BreathePrimaryButton(title: "onboarding.checkin.show", disabled: frequency == 0 || difficultPeriod < 0, action: advance)
+            BreathePrimaryButton(title: "onboarding.story.continue", disabled: frequency == 0, action: advance)
+        }
+        .frame(minHeight: onboardingPageHeight(metrics), alignment: .top)
+    }
+
+    private func intensityQuestion(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            question("onboarding.checkin.intensity", metrics) {
+                intensitySlider(metrics)
+            }
+            Spacer(minLength: metrics.internalSpacing)
+            BreathePrimaryButton(title: "onboarding.story.continue", action: advance)
+        }
+        .frame(minHeight: onboardingPageHeight(metrics), alignment: .top)
+    }
+
+    private func difficultPeriodQuestion(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+            question("onboarding.checkin.period", metrics) {
+                VStack(spacing: metrics.internalSpacing) {
+                    ForEach(0...3, id: \.self) { value in
+                        periodAnswer(value, selected: difficultPeriod == value, metrics) {
+                            difficultPeriod = value
+                        }
+                    }
+                }
+            }
+            Spacer(minLength: metrics.internalSpacing)
+            BreathePrimaryButton(title: "onboarding.checkin.show", disabled: difficultPeriod < 0, action: advance)
         }
         .frame(minHeight: onboardingPageHeight(metrics), alignment: .top)
     }
 
     private func snapshot(_ metrics: AppLayoutMetrics) -> some View {
-        VStack(alignment: .leading, spacing: metrics.sectionSpacing) {
+        VStack(alignment: .center, spacing: metrics.sectionSpacing) {
             platformTitle("onboarding.snapshot.title", "onboarding.snapshot.detail", metrics)
-            BreatheCard(tint: .breatheSurfaceSoft, elevated: true) {
-                VStack(alignment: .leading, spacing: metrics.internalSpacing) {
-                    Chart(snapshotPoints) { point in
-                        AreaMark(x: .value("Time", point.hour), y: .value("Intensity", point.value))
-                            .foregroundStyle(LinearGradient(colors: [.breatheAccentMedium.opacity(0.5), .breatheAccentSoft.opacity(0.08)],
-                                                            startPoint: .top, endPoint: .bottom))
-                            .interpolationMethod(.catmullRom)
-                        LineMark(x: .value("Time", point.hour), y: .value("Intensity", point.value))
-                            .foregroundStyle(Color.breatheAccent).lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
-                            .interpolationMethod(.catmullRom)
-                    }
-                    .chartYScale(domain: 0...5.5).chartYAxis(.hidden)
-                    .chartXAxis {
-                        AxisMarks(values: [8, 14, 20]) { value in
-                            AxisValueLabel {
-                                if let hour = value.as(Int.self) { Text(axisKey(hour)).font(.caption) }
-                            }
+                .multilineTextAlignment(.center)
+
+            VStack(spacing: metrics.compactSpacing) {
+                planStep(icon: "waveform.path", metrics: metrics) {
+                    VStack(alignment: .leading, spacing: metrics.compactSpacing) {
+                        HStack(alignment: .firstTextBaseline, spacing: metrics.compactSpacing) {
+                            Text("onboarding.checkin.frequency")
+                                .font(AppTypography.caption(for: metrics.mode))
+                                .foregroundStyle(Color.breatheTextSecondary)
+                            Spacer(minLength: metrics.compactSpacing)
+                            Text(frequencyKey(max(1, frequency)))
+                                .font(AppTypography.callout(for: metrics.mode).weight(.semibold))
+                        }
+                        Divider()
+                        HStack(alignment: .firstTextBaseline, spacing: metrics.compactSpacing) {
+                            Text("onboarding.checkin.intensity")
+                                .font(AppTypography.caption(for: metrics.mode))
+                                .foregroundStyle(Color.breatheTextSecondary)
+                            Spacer(minLength: metrics.compactSpacing)
+                            Text("\(intensity)/5")
+                                .font(AppTypography.callout(for: metrics.mode).weight(.semibold))
+                                .monospacedDigit()
                         }
                     }
-                    .frame(height: metrics.chartHeight)
-                    .accessibilityLabel("onboarding.snapshot.chart.accessibility")
-                    HStack(spacing: metrics.compactSpacing) {
-                        Image(systemName: "circle.fill").font(.caption2).foregroundStyle(Color.breatheAccent)
-                        Text(snapshotInsight).font(AppTypography.callout(for: metrics.mode))
-                            .foregroundStyle(Color.breatheTextSecondary).fixedSize(horizontal: false, vertical: true)
+                }
+                planConnector(metrics)
+                planStep(icon: "clock.fill", metrics: metrics) {
+                    VStack(alignment: .leading, spacing: metrics.compactSpacing) {
+                        Text("onboarding.checkin.period")
+                            .font(AppTypography.caption(for: metrics.mode))
+                            .foregroundStyle(Color.breatheTextSecondary)
+                        Text(periodKey(max(0, min(difficultPeriod, 3))))
+                            .font(AppTypography.callout(for: metrics.mode).weight(.semibold))
+                    }
+                }
+                planConnector(metrics)
+                planStep(icon: "wind", highlighted: true, metrics: metrics) {
+                    VStack(alignment: .leading, spacing: metrics.compactSpacing) {
+                        Text("onboarding.story.rescue.short_pause")
+                            .font(AppTypography.callout(for: metrics.mode).weight(.semibold))
+                        Text("onboarding.story.rescue.short_detail")
+                            .font(AppTypography.caption(for: metrics.mode))
+                            .foregroundStyle(Color.breatheTextSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
-            Text("onboarding.snapshot.disclaimer")
-                .font(AppTypography.caption(for: metrics.mode)).foregroundStyle(Color.breatheTextSecondary)
+
+            Text("onboarding.story.rescue.short_choice")
+                .font(AppTypography.callout(for: metrics.mode).weight(.medium))
+                .foregroundStyle(Color.breatheTextSecondary)
+                .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+
             Spacer(minLength: metrics.internalSpacing)
             BreathePrimaryButton(title: "onboarding.snapshot.action", disabled: selection == nil) {
                 guard let selection else { return }
@@ -492,6 +516,47 @@ struct ProgramSelectionView: View {
             }
         }
         .frame(minHeight: onboardingPageHeight(metrics), alignment: .top)
+    }
+
+    private func planStep<Content: View>(icon: String, highlighted: Bool = false,
+                                         metrics: AppLayoutMetrics,
+                                         @ViewBuilder content: () -> Content) -> some View {
+        HStack(spacing: metrics.cardPadding) {
+            Image(systemName: icon)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(highlighted ? Color.white : Color.breatheAccent)
+                .frame(width: 46, height: 46)
+                .background(highlighted ? Color.breatheAccent : Color.breatheSky,
+                            in: Circle())
+                .accessibilityHidden(true)
+            content()
+                .font(AppTypography.sectionTitle(for: metrics.mode))
+                .foregroundStyle(Color.breatheText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            if highlighted {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(Color.breatheAccent)
+                    .accessibilityHidden(true)
+            }
+        }
+        .padding(metrics.cardPadding)
+        .frame(maxWidth: .infinity, minHeight: 76)
+        .background(highlighted ? Color.breatheSky.opacity(0.72) : Color.breatheSurface,
+                    in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous)
+                .stroke(highlighted ? Color.breatheAccentMedium : Color.breatheDivider,
+                        lineWidth: highlighted ? 2 : 1)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private func planConnector(_ metrics: AppLayoutMetrics) -> some View {
+        Image(systemName: "arrow.down")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(Color.breatheAccentMedium)
+            .frame(height: metrics.internalSpacing)
+            .accessibilityHidden(true)
     }
 
     private func platformTitle(_ title: LocalizedStringKey, _ detail: LocalizedStringKey,
@@ -504,8 +569,17 @@ struct ProgramSelectionView: View {
         }
     }
 
-    private func question<Content: View>(_ title: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 10) { Text(title).font(.headline); content() }
+    private func question<Content: View>(_ title: LocalizedStringKey, _ metrics: AppLayoutMetrics,
+                                         @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .center, spacing: metrics.sectionSpacing) {
+            Text(title)
+                .font(AppTypography.screenTitle(for: metrics.mode))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity)
+                .accessibilityAddTraits(.isHeader)
+            content()
+        }
     }
 
     private func impactCard(_ icon: String, _ title: LocalizedStringKey, _ tint: Color,
@@ -591,55 +665,79 @@ struct ProgramSelectionView: View {
             ZStack {
                 Circle()
                     .fill(highlighted ? Color.breatheAccent : Color.breatheSurface)
+                    .shadow(color: Color.breatheAccent.opacity(highlighted ? 0.18 : 0.07), radius: 8, y: 3)
                 Text("\(stage)")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(highlighted ? Color.white : Color.breatheAccent)
             }
-            .frame(width: 38, height: 38)
+            .frame(width: 46, height: 46)
+            .overlay {
+                Circle().stroke(highlighted ? Color.breatheAccentSoft : Color.breatheAccentMedium.opacity(0.28), lineWidth: 2)
+            }
+            .zIndex(2)
 
-            Image(systemName: icon)
-                .font(.body.weight(.semibold))
-                .foregroundStyle(Color.breatheAccent)
-                .frame(width: 26)
-                .accessibilityHidden(true)
-
-            Text(title)
-                .font(AppTypography.callout(for: metrics.mode).weight(highlighted ? .semibold : .regular))
-                .foregroundStyle(Color.breatheText)
-                .fixedSize(horizontal: false, vertical: true)
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, metrics.cardPadding)
-        .padding(.vertical, metrics.internalSpacing)
-        .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
-        .background {
-            LinearGradient(
-                colors: highlighted
-                    ? [Color.breatheSky.opacity(0.86), Color.breatheAccentSoft.opacity(0.68)]
-                    : [Color.breatheSurface.opacity(0.96), Color.breatheSky.opacity(0.30)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+            HStack(spacing: metrics.internalSpacing) {
+                Image(systemName: icon)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(Color.breatheAccent)
+                    .frame(width: 24)
+                    .accessibilityHidden(true)
+                Text(title)
+                    .font(AppTypography.callout(for: metrics.mode).weight(highlighted ? .semibold : .regular))
+                    .foregroundStyle(Color.breatheText)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, metrics.cardPadding)
+            .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
+            .background(
+                highlighted ? Color.breatheSky.opacity(0.72) : Color.breatheSurface.opacity(0.82),
+                in: RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous)
             )
+            .overlay {
+                RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous)
+                    .stroke(highlighted ? Color.breatheAccentMedium.opacity(0.35) : Color.white.opacity(0.74), lineWidth: 1)
+            }
         }
-        .clipShape(RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous)
-                .stroke(highlighted ? Color.breatheAccentMedium.opacity(0.38) : Color.white.opacity(0.8), lineWidth: 1)
-        }
-        .shadow(color: Color.breatheAccent.opacity(highlighted ? 0.08 : 0.035), radius: 10, y: 4)
+        .frame(maxWidth: .infinity)
         .opacity(revealedSupportSteps >= stage ? 1 : 0)
         .scaleEffect(revealedSupportSteps >= stage ? 1 : 0.96)
         .offset(y: revealedSupportSteps >= stage ? 0 : 14)
         .accessibilityElement(children: .combine)
     }
 
-    private func supportConnector(visible: Bool) -> some View {
-        Capsule()
-            .fill(Color.breatheAccentMedium.opacity(0.42))
-            .frame(width: 2, height: 12)
-            .opacity(visible ? 1 : 0)
-            .scaleEffect(y: visible ? 1 : 0, anchor: .top)
-            .accessibilityHidden(true)
+    private func supportJourney(_ metrics: AppLayoutMetrics) -> some View {
+        ZStack(alignment: .topLeading) {
+            LinearGradient(
+                colors: [Color.breatheSurface.opacity(0.76), Color.breatheSky.opacity(0.24)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .clipShape(RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+
+            SupportJourneyPath()
+                .stroke(Color.breatheAccentMedium.opacity(0.18), style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [7, 7]))
+            SupportJourneyPath()
+                .trim(from: 0, to: CGFloat(revealedSupportSteps) / 3)
+                .stroke(
+                    LinearGradient(colors: [.breatheAccentMedium, .breatheAccent], startPoint: .top, endPoint: .bottom),
+                    style: StrokeStyle(lineWidth: 4, lineCap: .round)
+                )
+
+            VStack(spacing: 26) {
+                stagedSupportRow(1, "bolt.heart.fill", "onboarding.story.rescue.short_urge", false, metrics)
+                stagedSupportRow(2, "pause.fill", "onboarding.story.rescue.short_pause", true, metrics)
+                stagedSupportRow(3, "arrow.forward", "onboarding.story.rescue.short_choice", false, metrics)
+            }
+                .padding(.trailing, metrics.internalSpacing)
+            .padding(.vertical, 6)
+        }
+        .frame(maxWidth: .infinity, minHeight: 238, maxHeight: 238)
+        .overlay {
+            RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous)
+                .stroke(Color.white.opacity(0.72), lineWidth: 1)
+        }
+        .accessibilityElement(children: .contain)
     }
 
     private func answerChip(_ title: LocalizedStringKey, selected: Bool, action: @escaping () -> Void) -> some View {
@@ -651,6 +749,147 @@ struct ProgramSelectionView: View {
                         in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(selected ? Color.breatheAccent : .breatheDivider, lineWidth: selected ? 2 : 1))
+    }
+
+    private func frequencyAnswer(_ value: Int, selected: Bool, _ metrics: AppLayoutMetrics,
+                                 action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+            BreatheFeedback.selection()
+        } label: {
+            HStack(spacing: metrics.cardPadding) {
+                frequencyIllustration(value)
+                Text(frequencyKey(value))
+                    .font(AppTypography.body(for: metrics.mode).weight(.semibold))
+                    .foregroundStyle(Color.breatheText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(selected ? Color.breatheAccent : Color.breatheTextTertiary)
+            }
+            .padding(.horizontal, metrics.cardPadding)
+            .frame(maxWidth: .infinity, minHeight: 76)
+            .background(selected ? Color.breatheSky.opacity(0.78) : Color.breatheSurface,
+                        in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous)
+                    .stroke(selected ? Color.breatheAccent : Color.breatheDivider,
+                            lineWidth: selected ? 2 : 1)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    private func frequencyIllustration(_ value: Int) -> some View {
+        let positions: [(CGFloat, CGFloat)] = [(32, 27), (-32, 27), (32, -27), (-32, -27)]
+        let position = positions[max(0, min(value - 1, positions.count - 1))]
+        return Image("CravingFrequency")
+            .resizable()
+            .scaledToFill()
+            .frame(width: 128, height: 96)
+            .offset(x: position.0, y: position.1)
+            .frame(width: 64, height: 54)
+            .clipped()
+            .accessibilityHidden(true)
+    }
+
+    private func intensitySlider(_ metrics: AppLayoutMetrics) -> some View {
+        VStack(spacing: metrics.sectionSpacing) {
+            ZStack {
+                Circle()
+                    .fill(Color.breatheSky.opacity(0.46))
+                    .frame(width: 116, height: 116)
+                frequencyIllustration(min(intensity, 4))
+                    .scaleEffect(1.42)
+                    .opacity(0.9)
+            }
+
+            VStack(spacing: metrics.internalSpacing) {
+                Slider(
+                    value: Binding(
+                        get: { intensitySliderValue },
+                        set: {
+                            let newValue = Int($0.rounded())
+                            if newValue != intensity { BreatheFeedback.selection() }
+                            intensitySliderValue = $0
+                            intensity = newValue
+                        }
+                    ),
+                    in: 1...5,
+                    onEditingChanged: { isEditing in
+                        guard !isEditing else { return }
+                        Task { @MainActor in
+                            await Task.yield()
+                            let snappedValue = intensitySliderValue.rounded()
+                            withAnimation(reduceMotion ? nil : .smooth(duration: 0.24, extraBounce: 0)) {
+                                intensitySliderValue = snappedValue
+                            }
+                            intensity = Int(snappedValue)
+                        }
+                    }
+                )
+                .tint(Color.breatheAccent)
+                .accessibilityValue(Text("\(intensity)"))
+
+                HStack {
+                    ForEach(1...5, id: \.self) { value in
+                        Text("\(value)")
+                            .font(AppTypography.caption(for: metrics.mode).weight(value == intensity ? .bold : .regular))
+                            .foregroundStyle(value == intensity ? Color.breatheAccent : Color.breatheTextTertiary)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+            .padding(metrics.cardPadding)
+            .background(Color.breatheSurface,
+                        in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous)
+                    .stroke(Color.breatheDivider, lineWidth: 1)
+            }
+        }
+        .onAppear {
+            intensity = max(1, min(intensity, 5))
+            intensitySliderValue = Double(intensity)
+        }
+    }
+
+    private func periodAnswer(_ value: Int, selected: Bool, _ metrics: AppLayoutMetrics,
+                              action: @escaping () -> Void) -> some View {
+        let images = ["ImpactEnergy", "FreedomImpact", "ImpactSleep", "ImpactResources"]
+        return Button {
+            action()
+            BreatheFeedback.selection()
+        } label: {
+            HStack(spacing: metrics.cardPadding) {
+                Image(images[max(0, min(value, images.count - 1))])
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 54, height: 54)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.white.opacity(0.8), lineWidth: 1))
+                    .accessibilityHidden(true)
+                Text(periodKey(value))
+                    .font(AppTypography.body(for: metrics.mode).weight(.semibold))
+                    .foregroundStyle(Color.breatheText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(selected ? Color.breatheAccent : Color.breatheTextTertiary)
+            }
+            .padding(.horizontal, metrics.cardPadding)
+            .frame(maxWidth: .infinity, minHeight: 76)
+            .background(selected ? Color.breatheSky.opacity(0.78) : Color.breatheSurface,
+                        in: RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: metrics.cardRadius, style: .continuous)
+                    .stroke(selected ? Color.breatheAccent : Color.breatheDivider,
+                            lineWidth: selected ? 2 : 1)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private struct SnapshotPoint: Identifiable { let hour: Int; let value: Double; var id: Int { hour } }
@@ -672,7 +911,7 @@ struct ProgramSelectionView: View {
         // The progress bar lives above the page content. Reserve only its real
         // footprint so the page fills the viewport and its primary action rests
         // against the lower safe-area padding on every device height.
-        max(560, metrics.availableSize.height - (metrics.mode == .compact ? 64 : 72))
+        max(0, metrics.availableSize.height - metrics.cardPadding * 2 - metrics.sectionSpacing - 8)
     }
 
     private func advance() {

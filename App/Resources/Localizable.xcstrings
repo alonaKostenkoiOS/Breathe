@@ -15757,78 +15757,77 @@
     },
     "onboarding.checkin.frequency" : {
       "comment" : "Questionnaire frequency question.",
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wie oft tritt der Impuls auf?"
+            "value" : "Wie oft verspüren Sie das Verlangen?"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "How often does the impulse show up?"
+            "value" : "How often do you feel the urge?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Con qué frecuencia aparece el impulso?"
+            "value" : "¿Con qué frecuencia sientes el deseo?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "À quelle fréquence l’impulsion apparaît-elle ?"
+            "value" : "À quelle fréquence ressentez-vous l’envie ?"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quanto spesso si manifesta l'impulso?"
+            "value" : "Quanto spesso senti il desiderio?"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "衝動はどのくらいの頻度で現れますか?"
+            "value" : "欲求を感じる頻度はどのくらいですか？"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "충동은 얼마나 자주 나타나는가?"
+            "value" : "욕구를 얼마나 자주 느끼나요?"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jak często pojawia się impuls?"
+            "value" : "Jak często odczuwasz potrzebę?"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Com que frequência o impulso aparece?"
+            "value" : "Com que frequência você sente vontade?"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dürtü ne sıklıkla ortaya çıkıyor?"
+            "value" : "Bu isteği ne sıklıkla hissediyorsunuz?"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Як часто виникає імпульс?"
+            "value" : "Як часто виникає потяг?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "冲动多久出现一次？"
+            "value" : "你多久会感到一次渴望？"
           }
         }
       }
@@ -16147,7 +16146,6 @@
     },
     "onboarding.checkin.intensity" : {
       "comment" : "Questionnaire intensity question; followed by a labeled 1–5 scale.",
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -16225,7 +16223,6 @@
     },
     "onboarding.checkin.period" : {
       "comment" : "Questionnaire time-of-day question.",
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -20994,7 +20991,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Continue"
+            "value" : "Start with this plan"
           }
         },
         "es" : {
@@ -21048,7 +21045,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Продовжити"
+            "value" : "Почати з цим планом"
           }
         },
         "zh-Hans" : {
@@ -21150,7 +21147,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A simple view based only on your answers."
+            "value" : "Here is how Breathe will turn your answers into support when an urge appears."
           }
         },
         "es" : {
@@ -21204,7 +21201,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Проста візуалізація лише на основі ваших відповідей."
+            "value" : "Ось як Breathe використає ваші відповіді, коли з’явиться потяг."
           }
         },
         "zh-Hans" : {
@@ -21217,6 +21214,7 @@
     },
     "onboarding.snapshot.disclaimer" : {
       "comment" : "Chart safety disclaimer.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -21617,7 +21615,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your starting map"
+            "value" : "Your first action plan"
           }
         },
         "es" : {
@@ -21671,7 +21669,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ваша стартова карта"
+            "value" : "Ваш перший план дій"
           }
         },
         "zh-Hans" : {
@@ -23396,6 +23394,7 @@
     },
     "onboarding.story.rescue.detail" : {
       "comment" : "Concrete examples of the five supported programs and immediate product value.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -23473,6 +23472,7 @@
     },
     "onboarding.story.rescue.disclaimer" : {
       "comment" : "Compact product limitation.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -23860,8 +23860,395 @@
         }
       }
     },
+    "onboarding.story.rescue.short_choice" : {
+      "comment" : "Very short third stage; hopeful without guaranteeing recovery.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du wählst erneut"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One step closer to freedom"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tu eliges de nuevo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu choisis à nouveau"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli di nuovo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたは再び選択します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "당신은 다시 선택"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wybierasz ponownie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você escolhe novamente"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrar sen seç"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ви на крок ближче до свободи"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你再选择"
+          }
+        }
+      }
+    },
+    "onboarding.story.rescue.short_detail" : {
+      "comment" : "One-sentence description of immediate support; no guarantee.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atmen hilft Ihnen, den Drang zu überwinden und zu entscheiden, was als nächstes passiert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breathe helps you get through the urge and choose what happens next."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respirar te ayuda a superar el impulso y a elegir lo que sucede a continuación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respirer vous aide à surmonter l’envie et à choisir ce qui se passera ensuite."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respira ti aiuta a superare l'impulso e a scegliere cosa succederà dopo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "呼吸は衝動を乗り越え、次に何が起こるかを選択するのに役立ちます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "호흡은 충동을 극복하고 다음에 일어날 일을 선택하는 데 도움이 됩니다."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oddech pomaga pokonać potrzebę i wybrać, co stanie się dalej."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respirar ajuda você a superar o desejo e a escolher o que acontece a seguir."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nefes almak, dürtüyü aşmanıza ve daha sonra ne olacağını seçmenize yardımcı olur."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breathe допомагає пережити потяг і повернути вибір."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "呼吸可以帮助你克服冲动并选择接下来要发生的事情。"
+          }
+        }
+      }
+    },
+    "onboarding.story.rescue.short_pause" : {
+      "comment" : "Very short second stage describing immediate Breathe support.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine kurze Pause mit Breathe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support from Breathe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una breve pausa con Breathe"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une courte pause avec Breathe"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una breve pausa con Breathe"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breatheで少し休憩"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breath로 잠시 멈춤"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Krótka przerwa z Oddechem"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma breve pausa com Breathe"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breathe ile kısa bir duraklama"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Допомога від Breathe"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A short pause with Breathe"
+          }
+        }
+      }
+    },
+    "onboarding.story.rescue.short_title" : {
+      "comment" : "Short onboarding title about interrupting an automatic habit.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Machen Sie eine Pause, bevor die Gewohnheit überhand nimmt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause before the habit takes over"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haga una pausa antes de que el hábito se haga cargo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faites une pause avant que l'habitude ne prenne le dessus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausa prima che l'abitudine prenda il sopravvento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "習慣が定着する前に一時停止する"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "습관이 들기 전에 잠시 멈춰라"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zatrzymaj się, zanim nawyk przejmie kontrolę"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faça uma pausa antes que o hábito assuma o controle"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alışkanlık devralmadan önce duraklayın"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зупиніться, перш ніж звичка візьме гору"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause before the habit takes over"
+          }
+        }
+      }
+    },
+    "onboarding.story.rescue.short_urge" : {
+      "comment" : "Very short first stage of the Rescue explanation.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Drang stellt sich ein"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The urge appears"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "aparece el impulso"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'envie apparaît"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appare l'impulso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "衝動が現れる"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "충동이 나타난다"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pojawia się potrzeba"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A vontade aparece"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dürtü ortaya çıkıyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "З’являється потяг"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "冲动出现"
+          }
+        }
+      }
+    },
     "onboarding.story.rescue.title" : {
       "comment" : "Value-focused onboarding title without guaranteeing an outcome.",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

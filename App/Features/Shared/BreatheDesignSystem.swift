@@ -140,14 +140,19 @@ struct BreathePrimaryButton: View {
 private struct BreathePrimaryButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.appLayoutMetrics) private var metrics
+    @Environment(\.isEnabled) private var isEnabled
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundStyle(.white)
-            .background(configuration.isPressed ? Color.breatheAccentPressed : .breatheAccent,
+            .foregroundStyle(isEnabled ? Color.white : Color.breatheTextTertiary)
+            .background(isEnabled
+                        ? (configuration.isPressed ? Color.breatheAccentPressed : Color.breatheAccent)
+                        : Color.breatheDivider.opacity(0.72),
                         in: RoundedRectangle(cornerRadius: metrics.controlRadius, style: .continuous))
-            .opacity(configuration.isPressed ? 0.92 : 1)
-            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.985 : 1)
+            .opacity(configuration.isPressed && isEnabled ? 0.92 : 1)
+            .scaleEffect(configuration.isPressed && isEnabled && !reduceMotion ? 0.985 : 1)
             .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: configuration.isPressed)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isEnabled)
     }
 }
 
